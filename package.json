@@ -11,7 +11,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "debug": "node --inspect --expose-gc index.js",
+    "awo": "node --inspect --expose-gc index.js",
     "start": "node  index.js"
   },
   "keywords": [
