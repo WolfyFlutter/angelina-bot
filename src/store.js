@@ -27,8 +27,8 @@ class Store {
     }
 
     getGroupMetadata = async (jid) => {
-        return this.antri.run(jid, async () => {
-            let data = this.groupMetadata.get(jid)
+
+        let data = this.groupMetadata.get(jid)
             if (!data) {
                 try {
                     const fresh = await this.sock.groupMetadata(jid)
@@ -43,7 +43,10 @@ class Store {
                 log(`♻️ cache: ${data.subject}`)
                 return data
             }
-        })
+
+        // return this.antri.run(jid, async () => {
+            
+        // })
     }
 
     bind = (sock) => {

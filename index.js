@@ -7,8 +7,6 @@ import makeWASocket, {
   jidNormalizedUser,
   fetchLatestWaWebVersion,
   delay,
-  WAProto,
-  isJidGroup
 } from "baileys";
 import P from 'pino'
 import NodeCache from '@cacheable/node-cache';
@@ -17,8 +15,6 @@ import NodeCache from '@cacheable/node-cache';
 
 // import lib node
 import fs from 'fs'
-import { zstdCompress, zstdDecompress } from "node:zlib";
-import { promisify } from "node:util";
 
 // import lib lokal
 import Store from "./src/store.js";
@@ -37,21 +33,24 @@ import { react, sendText, getErrorLine } from "./src/helper.js";
 
 import * as wa from "./src/helper.js";
 
-// Tambahkan ini sekali di awal program
-// process.on('uncaughtException', err => {
-//   console.error('💥 Uncaught Exception:', err)
-// })
+if (!allPath.botNumber) {
+  console.log('nomor bot belum di isi. edit file ./src/static.js dan edit key botNumber')
+  process.exit(0)
+}
 
-// process.on('unhandledRejection', err => {
-//   console.error('⚠️ Unhandled Promise Rejection:', err)
-// })
+//Tambahkan ini sekali di awal program
+process.on('uncaughtException', err => {
+  console.error('💥 Uncaught Exception:', err)
+})
 
-// process.on('error', err => {
-//   console.error('🚨 Process-level error:', err)
-// })
+process.on('unhandledRejection', err => {
+  console.error('⚠️ Unhandled Promise Rejection:', err)
+})
 
-// lain lain
-const zstdCompressAsync = promisify(zstdCompress)
+process.on('error', err => {
+  console.error('🚨 Process-level error:', err)
+})
+
 
 // class define
 const msgRetryCounterCache = new NodeCache();
@@ -103,7 +102,8 @@ const { version } = await fetchLatestWaWebVersion()
 
 
 const startSock = async () => {
-  if(!allPath.botNumber) throw ('bot number belum di isi')
+
+
   console.log("🏃‍♂️ fungsi startSock di panggil");
 
   sock = makeWASocket({
@@ -232,10 +232,6 @@ const startSock = async () => {
 
               // protocol delete
               if (type === 0) {
-                const deletedAt = message.messageTimestamp.toInt ? message.messageTimestamp.toInt() : message.messageTimestamp
-                const deletedBy = isJidGroup(message.key.remoteJid) ? message.key.participant || bot.lid : message.key.remoteJid
-                const messageId = message.message.protocolMessage.key.id
-                const chatId = message.key.remoteJid
                 console.log(`protocol hapus, di hapus oleh ${message.pushName}`)
                 continue
               }
@@ -358,10 +354,6 @@ const startSock = async () => {
 
               // protocol delete
               if (type === 0) {
-               const deletedAt = message.messageTimestamp.toInt ? message.messageTimestamp.toInt() : message.messageTimestamp
-                const deletedBy = isJidGroup(message.key.remoteJid) ? message.key.participant || bot.lid : message.key.remoteJid
-                const messageId = message.message.protocolMessage.key.id
-                const chatId = message.key.remoteJid
                 console.log(`[append] protocol hapus, di hapus oleh ${message.pushName}`)
                 continue
               }
