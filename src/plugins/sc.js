@@ -16,10 +16,10 @@ async function handler({ sock, jid, text, m, q, prefix, command }) {
             contextInfo: {
                 externalAdReply : {
                     thumbnail : await fs.promises.readFile('./src/assets/angelina_thumbnail_480p.webp'),
-                    thumbnailUrl: 'https://www.youtube.com/watch?v=xvFZjo5PgG0',
+                    thumbnailUrl: 'https://github.com/WolfyFlutter/angelina-bot',
                     title : 'sc bot wa angelina new',
                     body : 'download sc bot wa terbaru',
-                    sourceUrl : 'https://github.com/',
+                    sourceUrl : 'https://github.com/WolfyFlutter/angelina-bot',
                     renderLargerThumbnail: true,
                     mediaType: 1,
                 }
