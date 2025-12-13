@@ -1,13 +1,7 @@
 {
-  "isEnable": false,
+  "isEnable": true,
   "prefixList": [
-    "🐤",
-    "+",
-    "=",
-    "📦",
-    "a",
     "/",
-    "🪧",
     "."
   ]
 }
