@@ -1,7 +1,6 @@
 {
   "dependencies": {
     "@cacheable/node-cache": "^1.7.4",
-    "@napi-rs/canvas": "^0.1.83",
     "baileys": "github:WhiskeySockets/Baileys",
     "file-type": "^21.0.0",
     "pino": "^9.14.0"
