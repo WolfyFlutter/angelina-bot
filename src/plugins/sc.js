@@ -1,10 +1,5 @@
-import { sendText, tag, Category, textOnlyMessage, downloadBuffer } from '../helper.js'
+import { Category, textOnlyMessage } from '../helper.js'
 import fs from 'fs'
-
-/**
- * @param {Object} params
- * @param {import("baileys").WASocket} params.sock   // ← auto-complete muncul di sini
- */
 
 async function handler({ sock, jid, q }) {
     if (!textOnlyMessage) return
@@ -26,7 +21,6 @@ async function handler({ sock, jid, q }) {
     )
 }
 
-handler.bypassPrefix = false
 handler.pluginName = 'source code'
 handler.command = ['sc']
 handler.alias = []

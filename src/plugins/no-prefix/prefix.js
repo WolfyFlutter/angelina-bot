@@ -40,14 +40,12 @@ async function handler({ sock, m, text, jid, prefix, command }) {
 
       default:
         return await sendText(m.chatId, param[0] + ' invalid\n\n' + footer)
-
-
     }
   }
 }
 
+handler.preventDelete = true
 handler.bypassPrefix = true
-
 handler.pluginName = 'prefix'
 handler.command = ['prefix']
 handler.alias = []

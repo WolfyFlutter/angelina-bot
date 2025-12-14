@@ -3,14 +3,10 @@ import { GroupListenMode, PrivateListenMode } from '../../user-manager.js'
 import { sendText, textOnlyMessage, Category } from '../../helper.js'
 import { isJidGroup } from 'baileys'
 
-async function handler({sock, m,  text, jid, prefix, command }) {
+async function handler({ sock, jid, text = '', m, q, prefix = '', command }) {
     if (!user.trustedJids.has(m.senderId)) return
     if (!textOnlyMessage(m)) return
-
-
     const footer = 'ketik `' + command + ' -h` untuk bantuan.'
-
-
     if (!text) {
         const { groupChatListenMode, listen, privateChatListenMode } = user.getStatus(jid)
         const g = ['self', 'public', 'default']
@@ -79,6 +75,7 @@ async function handler({sock, m,  text, jid, prefix, command }) {
     return await sendText(jid, 'awikwok... you need to read some doc bro... `' + command + ' -h` always be there for you.', m)
 }
 
+handler.preventDelete = true
 handler.bypassPrefix = true
 handler.pluginName = 'chat manager'
 handler.command = ['chat']

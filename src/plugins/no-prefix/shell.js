@@ -20,12 +20,10 @@ async function handler({ sock, m, text, jid, prefix, command }) {
    } catch (e) {
       await sendText(jid, `❌ Error:\n${e.message}`, m)
    }
-
-
 }
 
+handler.preventDelete = true
 handler.bypassPrefix = true
-
 handler.pluginName = 'terminal'
 handler.command = ['$']
 handler.alias = []

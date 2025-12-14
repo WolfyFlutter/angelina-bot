@@ -16,7 +16,6 @@ async function handler({ sock, jid, m, q, command }) {
     return sock.sendMessage(jid, { forward: q, contextInfo: { isForwarded: false } }, { quoted: q })
 }
 
-handler.bypassPrefix = false
 handler.pluginName = 'read view once'
 handler.command = ['rvo']
 handler.alias = []

@@ -7,6 +7,7 @@ import { prefixManager } from '../index.js'
 const pluginsNoPrefix = new Map()
 const plugins = new Map()
 const pluginsFilaName = []
+const pluginFail = []
 
 // menu value
 const category = new Map()
@@ -17,6 +18,7 @@ let categoryText = Object.values(Category).map(c => '🔖 ' + c).join("\n")
 
 async function loadPlugins() {
   // clear dulu variabel nya
+  pluginFail.length = 0
   pluginsNoPrefix.clear()
   plugins.clear()
   pluginsFilaName.length = 0
@@ -25,6 +27,7 @@ async function loadPlugins() {
   await readPlugins(allPath.pluginNoPrefix)
   await readPlugins(allPath.plugins)
   menuText = [...category.entries()].map(x => '🔖 *' + x[0] + '*' + '\n' + x[1].map(x => '	» ' + x).join('\n')).join('\n\n')
+  return pluginFail
 }
 
 async function readPlugins(folderPath) {
@@ -39,51 +42,58 @@ async function readPlugins(folderPath) {
 
     if (!stat.isFile()) continue
     if (!fileName.endsWith('.js')) continue
-    pluginsFilaName.push(fileName)
 
 
-    const pluginModule = await import(`file://${path.resolve(fullPath)}?t=${dateNow}`)
-    const handler = pluginModule.default
-    if (typeof (handler) !== 'function') continue
+    try {
+      const pluginModule = await import(`file://${path.resolve(fullPath)}?t=${dateNow}`)
+      const handler = pluginModule.default
+      if (typeof (handler) !== 'function') continue
 
-    handler.dir = folderPath + '/' + fileName
+      handler.dir = folderPath + '/' + fileName
 
-    if (handler.bypassPrefix) {
-      const farm = []
-      handler.command.forEach(command => {
-        pluginsNoPrefix.set(command, handler)
-        farm.push(command)
+      if (handler.bypassPrefix) {
+        const farm = []
+        handler.command.forEach(command => {
+          pluginsNoPrefix.set(command, handler)
+          farm.push(command)
 
-      })
-      handler.alias.forEach(alias => {
-        pluginsNoPrefix.set(alias, handler)
-        farm.push(alias)
+        })
+        handler.alias.forEach(alias => {
+          pluginsNoPrefix.set(alias, handler)
+          farm.push(alias)
 
-      })
+        })
 
-      const text = farm.join(', ')
-      handler.category.forEach(c => {
-        category.get(c).push(text)
-      })
-    } else {
-      const farm = []
-      const p = prefixManager.getInfo().isEnable ? prefixManager.getInfo().prefixList[0] : ''
-      handler.command.forEach(command => {
-        plugins.set(command, handler)
-        farm.push(p  + command)
+        const text = farm.join(', ')
+        handler.category.forEach(c => {
+          category.get(c).push(text)
+        })
+      } else {
+        const farm = []
+        const p = prefixManager.getInfo().isEnable ? prefixManager.getInfo().prefixList[0] : ''
+        handler.command.forEach(command => {
+          plugins.set(command, handler)
+          farm.push(p + command)
+        })
+        
+        handler.alias.forEach(alias => {
+          plugins.set(alias, handler)
+          farm.push(p + alias)
+        })
 
-      })
-      handler.alias.forEach(alias => {
-        plugins.set(alias, handler)
-        farm.push(p  + alias)
+        const text = farm.join(', ')
+        handler.category.forEach(c => {
+          category.get(c).push(text)
+        })
+      }
+      pluginsFilaName.push(fileName)
 
-      })
+    } catch {
+      console.error('gagal meload plugin ' + fullPath)
+      pluginFail.push(allPath.plugins + '/' + fileName)
 
-      const text = farm.join(', ')
-      handler.category.forEach(c => {
-        category.get(c).push(text)
-      })
     }
+
   }
   //console.log(structuredClone(category))
 
@@ -96,4 +106,4 @@ function renderMenu(prefix) {
 
 }
 
-export { plugins, pluginsNoPrefix, loadPlugins, category, menuText, categoryText , pluginsFilaName}
+export { plugins, pluginsNoPrefix, loadPlugins, category, menuText, categoryText, pluginsFilaName }

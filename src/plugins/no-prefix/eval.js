@@ -6,8 +6,7 @@ import crypto from 'crypto'
 import util from 'node:util'
 import * as b from 'baileys'
 
-async function handler({ sock, m, text, jid, prefix, command }) {
-    const q = m.q
+async function handler({ sock, jid, text, m, q, prefix, command }) {
 
     if (!user.trustedJids.has(m.senderId)) return
     if (!textOnlyMessage(m)) return
@@ -23,8 +22,8 @@ async function handler({ sock, m, text, jid, prefix, command }) {
     }
 }
 
+handler.preventDelete = true
 handler.bypassPrefix = true
-
 handler.pluginName = 'eval'
 handler.command = ['!']
 handler.alias = []

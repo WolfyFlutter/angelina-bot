@@ -1,11 +1,11 @@
 import { getDevice, isJidGroup } from 'baileys'
 import { user, store, bot } from '../../index.js'
-import { sendText, tag, Category, getPn } from '../helper.js'
+import { sendText, Category } from '../helper.js'
 
 // fungsi tambahan
 const lookupPn = (gm, lid) => gm.participants.find(p => p.id === lid)?.phoneNumber
 
-async function handler({ sock, m, text, jid, prefix, command }) {
+async function handler({ m, jid }) {
 
 
     const mese = m.q || m
@@ -47,7 +47,7 @@ async function handler({ sock, m, text, jid, prefix, command }) {
     }
 
     // db index
-    const query  = null
+    const query = null
     const id = query?.id ? query.id : 'tidak ada'
 
     const resolveLid = await rl(mese)
@@ -72,7 +72,7 @@ async function handler({ sock, m, text, jid, prefix, command }) {
     const p_isTrusted = 'trust: ' + (isTrusted ? 'yes (' + isTrusted + ')' : 'no') + '\n'
     const p_isBanned = 'block: ' + (isBanned ? 'yes (' + isBanned + ')' : 'no') + '\n'
     const p_indexMessage = 'index: ' + id + '\n'
-0
+    0
 
     const print =
         '👤 *account*\n' +
@@ -86,11 +86,7 @@ async function handler({ sock, m, text, jid, prefix, command }) {
 
     //const _print = header + p_pushName + p_messageId + p_device + p_chatId + p_lid + p_pn + p_message_type + p_text
     return await sendText(jid, print, mese)
-
-
 }
-
-//handler.bypassPrefix = true
 
 handler.pluginName = 'inspect'
 handler.command = ['im']

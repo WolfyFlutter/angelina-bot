@@ -10,7 +10,7 @@ const formatMemory = (mem) => {
    return print
 }
 
-async function handler({ sock, m, text, jid, prefix, command }) {
+async function handler({ m, text, jid, command }) {
 
    if (!text) {
       const mem = process.memoryUsage()
@@ -29,14 +29,7 @@ async function handler({ sock, m, text, jid, prefix, command }) {
    } else {
       return await sendText(jid, "hmm invalid param. leave it empty to see bot's ram consume or use " + command + " `-h` to see ram consume by launcher.js")
    }
-
-
-
-
-
 }
-
-//handler.bypassPrefix = true
 
 handler.pluginName = 'memory'
 handler.command = ['memory']

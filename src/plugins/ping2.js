@@ -10,7 +10,6 @@ async function handler({ jid }) {
    return
 }
 
-handler.bypassPrefix = false
 handler.pluginName = 'ping 2'
 handler.command = ['ping2']
 handler.alias = ['p2']

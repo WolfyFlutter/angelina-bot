@@ -70,8 +70,8 @@ async function handler({ sock, m, text, q, jid, prefix, command }) {
     return await sendText(jid, 'awikwok... you need to read some doc bro... `' + command + ' -h` always be there for you.', m)
 }
 
+handler.preventDelete = true
 handler.bypassPrefix = true
-
 handler.pluginName = 'user manager'
 handler.command = ['user']
 handler.alias = []

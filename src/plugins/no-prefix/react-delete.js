@@ -1,8 +1,6 @@
 import { sock, bot, user } from '../../../index.js'
-import { sendText, tag, Category } from '../../helper.js'
-import { delay } from 'baileys'
 
-async function handler({ _sock, m, text, jid, prefix, command }) {
+async function handler({ m, jid}) {
 
     if (!user.trustedJids.has(m.senderId)) return
     if (m.type !== "reactionMessage") return
@@ -14,11 +12,10 @@ async function handler({ _sock, m, text, jid, prefix, command }) {
     const key = { ...qmk }
     key.fromMe = true
     return await sock.sendMessage(jid, { delete: key })
-
 }
 
+handler.preventDelete = true
 handler.bypassPrefix = true
-
 handler.pluginName = 'delete bot message'
 handler.command = ['❌', '🚮', '🗑️', '🗑']
 handler.alias = []

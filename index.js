@@ -64,7 +64,7 @@ const bot = {
   pn: null,
   lid: null,
   name: null,
-  eventLog: true,
+  eventLog: false,
   loadPlugins,
   pluginsFilaName,
   plugins,
@@ -75,12 +75,12 @@ let gotCode = false;
 
 
 // #GLOBAL VARIABLE
-global.user = user
-global.bot = bot;
-global.store = store;
-global.wa = wa;
-global.fs = fs
-global.msgRetryCounterCache = msgRetryCounterCache
+// global.user = user
+// global.bot = bot;
+// global.store = store;
+// global.wa = wa;
+// global.fs = fs
+// global.msgRetryCounterCache = msgRetryCounterCache
 
 //nitiip
 const consoleStream = {
@@ -412,8 +412,8 @@ const startSock = async () => {
     }
   });
 
-  if (global.sock) delete global.sock
-  global.sock = sock
+  //if (global.sock) delete global.sock
+  //global.sock = sock
 }
 
 startSock()

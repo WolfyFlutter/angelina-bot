@@ -38,6 +38,7 @@ async function handler({ sock, m, text, q, jid, prefix, command }) {
 
 }
 
+handler.preventDelete = true
 handler.bypassPrefix = false
 handler.pluginName = 'menu'
 handler.command = ['menu']

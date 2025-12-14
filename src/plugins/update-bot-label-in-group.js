@@ -3,11 +3,6 @@ import { user } from '../../index.js'
 import { sendText, Category, setBotLabel, textOnlyMessage } from '../helper.js'
 import { isJidGroup } from 'baileys'
 
-/**
- * @param {Object} params
- * @param {import("baileys").WASocket} params.sock   // ← auto-complete muncul di sini
- */
-
 async function handler({ m, text, jid }) {
    // memastikan hanya owner bot saja yang bisa pakai fitur ini
    if(!user.trustedJids.has(m.senderId)) return await sendText(jid, 'only owner', m)
@@ -31,8 +26,7 @@ async function handler({ m, text, jid }) {
    return await sendText(jid, 'sukses! check my new label boss')
 }
 
-handler.bypassPrefix = false
-handler.pluginName = 'working'
+handler.pluginName = 'change label bot'
 handler.command = ['label']
 handler.alias = []
 handler.category = [Category.OWNER]
