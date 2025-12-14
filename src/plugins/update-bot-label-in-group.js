@@ -26,6 +26,7 @@ async function handler({ m, text, jid }) {
    return await sendText(jid, 'sukses! check my new label boss')
 }
 
+handler.bypassPrefix = false
 handler.pluginName = 'change label bot'
 handler.command = ['label']
 handler.alias = []

@@ -93,7 +93,7 @@ const consoleStream = {
     }
   }
 }
-const logger = P({ level: "error" }, consoleStream)
+const logger = P({ level: "error" })
 
 
 
@@ -217,7 +217,7 @@ const startSock = async () => {
           try {
             // empty message
             if (!message.message) {
-              console.log("empty message", message);
+              console.log("empty message");
               continue
             }
 
@@ -233,18 +233,18 @@ const startSock = async () => {
 
               // protocol edit
               else if (type === 14) {
-                console.log('protocol edit todo', message)
+                console.log('protocol edit todo')
                 continue
               }
 
               // fallback for future notifi protocol handling
-              console.log("protocol unhandle", message);
+              console.log("protocol unhandle");
               continue
             }
 
             // no pushname message
             else if (!message?.pushName) {
-              console.log("pesan tanpa pushname", message);
+              console.log("pesan tanpa pushname");
               continue
             }
 
@@ -339,7 +339,7 @@ const startSock = async () => {
           try {
             // empty message
             if (!message.message) {
-              console.log("[append] empty message", message);
+              console.log("[append] empty message");
               continue
             }
 
@@ -355,18 +355,18 @@ const startSock = async () => {
 
               // protocol edit
               else if (type === 14) {
-                console.log('[append] protocol edit todo', message)
+                console.log('[append] protocol edit todo')
                 continue
               }
 
               // fallback for future notifi protocol handling
-              console.log("[append] protocol unhandle", message);
+              console.log("[append] protocol unhandle");
               continue
             }
 
             // no pushname message
             else if (!message?.pushName) {
-              console.log("[append] pesan tanpa pushname", message);
+              console.log("[append] pesan tanpa pushname");
               continue
             }
 
