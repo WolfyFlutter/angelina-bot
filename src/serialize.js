@@ -43,13 +43,13 @@ export default function (webMessagInfo) {
     // m.key <-> jadi define property
     Object.defineProperty(result, 'key', {
         get() { return webMessagInfo.key },
-        enumerable: false
+        enumerable: true
     })
 
     // mese <-> jadi define property
     Object.defineProperty(result, 'message', {
         get() { return iMessage },
-        enumerable: false
+        enumerable: true
     })
 
     // m.q <-> jadi define property
@@ -94,17 +94,17 @@ export default function (webMessagInfo) {
                     }
                     return q_key
                 },
-                enumerable: false
+                enumerable: true
             })
             // m.q.message <-> jadi define property
             Object.defineProperty(q, 'message', {
                 get() { return q_iMessage },
-                enumerable: false
+                enumerable: true
             })
 
             return q
         },
-        enumerable: false
+        enumerable: true
     })
     
     return result
