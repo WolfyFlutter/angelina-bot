@@ -1,9 +1,5 @@
 import { sendText, tag, Category, textOnlyMessage } from '../helper.js'
-
-/**
- * @param {Object} params
- * @param {import("baileys").WASocket} params.sock
- */
+import { user } from '../../index.js'
 
 async function handler({ sock, jid, m, q, command }) {
 
