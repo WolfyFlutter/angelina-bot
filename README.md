@@ -1,5 +1,8 @@
 sc not finished yet. tapi kalau mau coba boleh aja.
 
+```javascript
+console.log('wolep')
+```
 ges sorry kalau kode nya jelek :v
 maaf kalau repo nya berantakan wkwk
 masih belajar
