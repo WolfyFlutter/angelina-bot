@@ -41,6 +41,7 @@ build/Release
 node_modules/
 jspm_packages/
 auth/
+src/static.js
 
 
 # Snowpack dependency directory (https://snowpack.dev/)
