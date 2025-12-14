@@ -25,7 +25,7 @@ import socketEventLog from "./src/socket-event-log.js";
 import patchMessageBeforeSending from "./src/patch-message-before-send.js";
 import serialize from './src/serialize.js'
 
-import { loadPlugins, plugins, pluginsNoPrefix, category } from './src/plugin-handler.js'
+import { loadPlugins, plugins, pluginsNoPrefix, category, pluginsFilaName,  } from './src/plugin-handler.js'
 import { pluginHelpSerialize, consoleMessage } from "./src/helper.js";
 import { allPath } from "./src/static.js";
 import { react, sendText, getErrorLine } from "./src/helper.js";
@@ -38,17 +38,17 @@ if (!allPath.botNumber) {
 }
 
 //Tambahkan ini sekali di awal program
-process.on('uncaughtException', err => {
-  console.error('💥 Uncaught Exception:', err)
-})
+// process.on('uncaughtException', err => {
+//   console.error('💥 Uncaught Exception:', err)
+// })
 
-process.on('unhandledRejection', err => {
-  console.error('⚠️ Unhandled Promise Rejection:', err)
-})
+// process.on('unhandledRejection', err => {
+//   console.error('⚠️ Unhandled Promise Rejection:', err)
+// })
 
-process.on('error', err => {
-  console.error('🚨 Process-level error:', err)
-})
+// process.on('error', err => {
+//   console.error('🚨 Process-level error:', err)
+// })
 
 
 // class define
@@ -66,6 +66,7 @@ const bot = {
   name: null,
   eventLog: true,
   loadPlugins,
+  pluginsFilaName,
   plugins,
   category
 };
@@ -74,12 +75,12 @@ let gotCode = false;
 
 
 // #GLOBAL VARIABLE
-// global.user = user
-// global.bot = bot;
-// global.store = store;
-// global.wa = wa;
-// global.fs = fs
-// global.msgRetryCounterCache = msgRetryCounterCache
+global.user = user
+global.bot = bot;
+global.store = store;
+global.wa = wa;
+global.fs = fs
+global.msgRetryCounterCache = msgRetryCounterCache
 
 //nitiip
 const consoleStream = {

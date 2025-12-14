@@ -6,6 +6,7 @@ import { prefixManager } from '../index.js'
 
 const pluginsNoPrefix = new Map()
 const plugins = new Map()
+const pluginsFilaName = []
 
 // menu value
 const category = new Map()
@@ -15,6 +16,10 @@ let menuText = ''
 let categoryText = Object.values(Category).map(c => '🔖 ' + c).join("\n")
 
 async function loadPlugins() {
+  // clear dulu variabel nya
+  pluginsNoPrefix.clear()
+  plugins.clear()
+  pluginsFilaName.length = 0
   Object.values(Category).forEach(c => category.get(c).length = 0)
 
   await readPlugins(allPath.pluginNoPrefix)
@@ -34,6 +39,8 @@ async function readPlugins(folderPath) {
 
     if (!stat.isFile()) continue
     if (!fileName.endsWith('.js')) continue
+    pluginsFilaName.push(fileName)
+
 
     const pluginModule = await import(`file://${path.resolve(fullPath)}?t=${dateNow}`)
     const handler = pluginModule.default
@@ -89,4 +96,4 @@ function renderMenu(prefix) {
 
 }
 
-export { plugins, pluginsNoPrefix, loadPlugins, category, menuText, categoryText }
+export { plugins, pluginsNoPrefix, loadPlugins, category, menuText, categoryText , pluginsFilaName}
