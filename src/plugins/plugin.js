@@ -18,6 +18,8 @@ const searchPlugin = (command) => {
 
 
 
+
+
 async function handler({ sock, jid, text, m, q, prefix, command }) {
     if (!user.trustedJids.has(m.senderId)) return await sendText(jid, 'owner only')
     if (!text) return await sendText(jid, `please read doc. use *${prefix || ''}${command} -h*`)
