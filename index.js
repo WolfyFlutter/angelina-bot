@@ -1,4 +1,4 @@
-// import lib external
+// external lib import
 import makeWASocket, {
   makeCacheableSignalKeyStore,
   useMultiFileAuthState,
@@ -7,82 +7,52 @@ import makeWASocket, {
   jidNormalizedUser,
   fetchLatestWaWebVersion,
   delay,
+  isJidGroup,
+  areJidsSameUser
 } from "baileys";
 import P from 'pino'
 import NodeCache from '@cacheable/node-cache';
 
+// node js import
+import readline from 'node:readline'
+import fs from 'node:fs'
+import path from 'node:path'
 
+// local import
+import { safeRun, consoleMessage, getErrorLine, sendText, pluginHelpSerialize, loadJson } from './system/helper.js'
+import UserManager, { Permission } from './system/user-manager.js'
+import PrefixManager from './system/prefix-manager.js'
+import PluginManager from './system/plugin-manager.js'
+import allPath from "./system/allPath.js";
+import patchMessageBeforeSending from "./system/patch-message-before-send.js";
+import serialize from "./system/serialize.js";
 
-// import lib node
-import fs from 'fs'
+const prefixManager = new PrefixManager()
+const pluginManager = new PluginManager()
+if(prefixManager.isEnable) pluginManager.prefix = prefixManager.prefixList[0]
+pluginManager.buildMenu()
 
-// import lib lokal
-import Store from "./src/store.js";
-import User, { Permission } from "./src/user-manager.js";
-import PrefixManager from "./src/prefix-manager.js";
-
-import socketEventLog from "./src/socket-event-log.js";
-import patchMessageBeforeSending from "./src/patch-message-before-send.js";
-import serialize from './src/serialize.js'
-
-import { loadPlugins, plugins, pluginsNoPrefix, category, pluginsFilaName,  } from './src/plugin-handler.js'
-import * as ph from './src/plugin-handler.js'
-import { pluginHelpSerialize, consoleMessage } from "./src/helper.js";
-import { allPath } from "./src/static.js";
-import { react, sendText, getErrorLine } from "./src/helper.js";
-
-import * as wa from "./src/helper.js";
-
-if (!allPath.botNumber) {
-  console.log('nomor bot belum di isi. edit file ./src/static.js dan edit key botNumber')
-  process.exit(0)
-}
-
-//Tambahkan ini sekali di awal program
-// process.on('uncaughtException', err => {
-//   console.error('💥 Uncaught Exception:', err)
-// })
-
-// process.on('unhandledRejection', err => {
-//   console.error('⚠️ Unhandled Promise Rejection:', err)
-// })
-
-// process.on('error', err => {
-//   console.error('🚨 Process-level error:', err)
-// })
-
-
-// class define
 const msgRetryCounterCache = new NodeCache();
-const store = new Store();
-const user = new User();
-const prefixManager = new PrefixManager(allPath.prefixPath)
-
+const user = new UserManager();
 
 let sock //= makeWASocket({})
+const groupMetadata = new Map()
+const contacts = new Map()
 
 const bot = {
   pn: null,
   lid: null,
-  name: null,
-  eventLog: false,
-  loadPlugins,
-  pluginsFilaName,
-  plugins,
-  category,
-  ph
+  pushname: null,
+  displayName: null,
+  bulletin1: null,
+  bulletin2: null
 };
+const botInfo = loadJson(allPath.botInfo)
+Object.assign(bot, botInfo)
+
 let gotCode = false;
 
 
-
-// #GLOBAL VARIABLE
-// global.user = user
-// global.bot = bot;
-// global.store = store;
-// global.wa = wa;
-// global.fs = fs
-// global.msgRetryCounterCache = msgRetryCounterCache
 
 //nitiip
 const consoleStream = {
@@ -102,11 +72,68 @@ const logger = P({ level: "error" })
 const { saveCreds, state } = await useMultiFileAuthState(allPath.baileysAuth);
 const { version } = await fetchLatestWaWebVersion()
 
+// fungsi titip
+// const updateChats = (jid, partialUpdate) => {
+//   log('chat update', partialUpdate)
 
-const startSock = async () => {
+//   // checking file exist or no
+//   const filePath = allPath.storeChatsPath + '/' + jid + '.json'
+//   const exist = fs.existsSync(filePath)
+
+//   if (!exist) { // if file is not exist. create new one save to ram and file
+//     saveJson(partialUpdate, filePath)
+//     this.chats.set(jid, partialUpdate)
+//   } else { // if file exist, just update data in memory and save to file
+//     const currentData = this.chats.get(jid)
+//     const updatedJson = Object.assign(currentData, partialUpdate)
+//     this.chats.set(jid, updatedJson)
+//     saveJson(updatedJson, filePath)
+//   }
+// }
+
+const getGroupMetadata = async (jid) => {
+
+  let data = groupMetadata.get(jid)
+  if (!data) {
+    try {
+      const fresh = await sock.groupMetadata(jid)
+      console.log(`↗️ fetch group metadata: ${fresh.subject}`, fresh)
+      groupMetadata.set(jid, fresh)
+      return fresh
+    } catch (error) {
+      console.error(`gagal fetch group metadata: ${jid}`, error)
+      return undefined
+    }
+  } else {
+    console.log(`♻️ cache: ${data.subject}`)
+    return data
+  }
+
+  // return this.antri.run(jid, async () => {
+
+  // })
+}
+
+const store = {
+  groupMetadata,
+  contacts,
+  getGroupMetadata
+}
 
 
-  console.log("🏃‍♂️ fungsi startSock di panggil");
+// #GLOBAL VARIABLE
+global.user = user
+global.bot = bot;
+global.store = store;
+global.pm = pluginManager
+global.fs = fs
+global.msgRetryCounterCache = msgRetryCounterCache
+
+
+const startSock = async function (opts = {}) {
+  await pluginManager.loadPlugins()
+
+  console.log("▶️ fungsi startSock di panggil");
 
   sock = makeWASocket({
     version,
@@ -125,12 +152,7 @@ const startSock = async () => {
       console.log("should sycn history message", msg)
       return false
     },
-    //enableAutoSessionRecreation: true
   });
-
-  //socketPatch(sock);
-  socketEventLog(sock);
-  store.bind(sock);
 
   sock.ev.process(async (ev) => {
     // handle koneksi
@@ -153,7 +175,6 @@ const startSock = async () => {
             });
             console.log(
               "logout by user or uncompleted pairing. auth folder deleted. program stopped (please wait)",
-
             );
 
           }
@@ -172,10 +193,12 @@ const startSock = async () => {
 
       // pairing code
       else if (qr) {
-        console.log(qr);
-        if (!gotCode) {
+        if (opts.qr) {
+          console.log(qr);
+        }
+        if (!gotCode && opts.pn) {
           //console.log(`please wait, sending login code to ${allPath.botNumber}`);
-          const code = await sock.requestPairingCode(allPath.botNumber, 'QQQQQQQQ');
+          const code = await sock.requestPairingCode(opts.pn, 'QQQQQQQQ');
           console.log(`code ${code.match(/.{4}/g).join("-")}`);
           gotCode = true;
         }
@@ -186,29 +209,160 @@ const startSock = async () => {
     if (ev["creds.update"]) {
       const bem = ev["creds.update"];
 
-      // pairing gagal
-
-
       if (bem.me?.id && bem.me?.lid) {
-        bot.name = bem.me?.name || 'sexy bot';
+        bot.pushname = bem.me?.name || 'sexy bot';
         bot.pn = jidNormalizedUser(bem.me.id);
         bot.lid = jidNormalizedUser(bem.me.lid);
 
         const obj = {
-          notify: bot.name,
+          notify: bot.pushname,
           verifiedName: undefined,
         };
 
-        store.contacts.set(bot.pn, obj)
-        store.contacts.set(bot.lid, obj)
+        contacts.set(bot.pn, obj)
+        contacts.set(bot.lid, obj)
 
       }
       await saveCreds();
     }
 
+    // [push name]
+    if (ev['contacts.update']) {
+      const bem = ev['contacts.update']
+      for (let i = 0; i < bem.length; i++) {
+        const partialUpdate = bem[i]
+        const { id, ...rest } = partialUpdate
+        contacts.set(id, rest)
+      }
+    }
+
+    // [groupMetadata] 
+    if (ev['groups.update']) {
+      const bem = ev['groups.update']
+      for (let i = 0; i < bem.length; i++) {
+        const partialUpdate = bem[i] //bem (baileys event map), karena bentukan array jadi musti di ambil 1 1
+        const jid = partialUpdate.id // simpen dulu current jid nyah
+        const current = await getGroupMetadata(jid) //ambil dulu grup matadata current jid
+        if (current) Object.assign(current, partialUpdate)
+
+      }
+    }
+
+    // [groupMetadata] [chats]
+    if (ev['groups.upsert']) {
+      const bem = ev['groups.upsert']
+      for (let i = 0; i < bem.length; i++) {
+        const newGroupMetaData = bem[i] //bem (baileys event map), karena bentukan array jadi musti di ambil 1 1
+        const jid = newGroupMetaData.id // simpen dulu current jid nyah
+        groupMetadata.set(jid, newGroupMetaData) //simpen data baru ke store
+      }
+    }
+
+    if (ev['group-participants.update']) {
+      const bem = ev['group-participants.update']
+      const action = bem.action
+      const jid = bem.id
+      const selectedParticipants = bem.participants
+
+      const promoteDemote = async (participantsArray, nullOrAdmin) => {
+        const current = await getGroupMetadata(jid)
+        if (!current) return
+        for (let i = 0; i < participantsArray.length; i++) {
+          const newParticipant = participantsArray[i]
+          const find = current.participants.find(cp => cp.id == newParticipant.id)
+          const newParticipantData = {
+            //id: newParticipant.id,
+            admin: nullOrAdmin
+          }
+
+          if (find) {
+            Object.assign(find, newParticipantData)
+          } else {
+            current.participants.push(newParticipantData)
+          }
+        }
+      }
+
+      const remove = async (participantsArray, gMetadata, gMetadataJid) => {
+        const isBotKicked = participantsArray.some(p => areJidsSameUser(p.id, bot.lid))
+        if (isBotKicked) {
+          console.log('bot kicked from group')
+          gMetadata.delete(gMetadataJid)
+        } else {
+          const current = await getGroupMetadata(gMetadataJid)
+          if (!current) return
+          participantsArray.forEach(kickedParticipant => {
+            const idx = current.participants.findIndex(p => p.id == kickedParticipant.id)
+            if (idx != -1) {
+              current.participants.splice(idx, 1)
+            }
+          })
+          current.size = current.participants.length
+        }
+      }
+
+      const add = async (participantsArray) => {
+        const current = await getGroupMetadata(jid)
+        if (!current) return
+
+        for (let i = 0; i < participantsArray.length; i++) {
+          const newParticipant = participantsArray[i]
+          const find = current.participants.find(cp => cp.id == newParticipant.id)
+          if (!find) {
+            current.participants.push({
+              id: newParticipant.id,
+              lid: undefined,
+              phoneNumber: newParticipant.phoneNumber,
+              admin: null
+            })
+          }
+        }
+        current.size = current.participants.length
+      }
+
+      switch (action) {
+        case 'add':
+          await add(selectedParticipants)
+          break
+        case 'promote':
+          await promoteDemote(selectedParticipants, 'admin')
+          break
+        case 'demote':
+          await promoteDemote(selectedParticipants, null)
+          break
+        case 'remove':
+          await remove(selectedParticipants, groupMetadata, jid)
+          break
+        case 'modify':
+          console.log('modify', bem)
+          break
+      }
+    }
+
+    // // [groupMetadata] [chat]
+    if (ev['chats.update']) {
+      const bem = ev['chats.update']
+      for (let i = 0; i < bem.length; i++) {
+        const partialUpdate = bem[i] //bem (baileys event map), karena bentukan array jadi musti di ambil 1 1
+        const jid = partialUpdate.id // simpen dulu current jid nyah
+
+        // update ephemeral ke store grup
+        if (isJidGroup(jid)) {
+          if (!partialUpdate.hasOwnProperty('ephemeralExpiration')) continue
+          const value = partialUpdate.ephemeralExpiration || undefined
+          const ephemUpdate = { ephemeralDuration: value }
+          const current = await getGroupMetadata(jid) //ambil dulu grup matadata current jid
+
+          Object.assign(current, ephemUpdate)
+          console.log('group ephemeral update', ephemUpdate)
+        }
+      }
+    }
+
     // pesan
     if (ev["messages.upsert"]) {
       const bem = ev["messages.upsert"];
+      //console.log(bem)
       const { messages, type } = bem;
 
       // NOTIFY
@@ -225,16 +379,16 @@ const startSock = async () => {
 
             // protocol message
             else if (message.message?.protocolMessage) {
-              const type = message.message?.protocolMessage?.type
+              const protocolType = message.message?.protocolMessage?.type
 
               // protocol delete
-              if (type === 0) {
+              if (protocolType === 0) {
                 console.log(`protocol hapus, di hapus oleh ${message.pushName}`)
                 continue
               }
 
               // protocol edit
-              else if (type === 14) {
+              else if (protocolType === 14) {
                 console.log('protocol edit todo')
                 continue
               }
@@ -282,42 +436,30 @@ const startSock = async () => {
             let command = null
             try {
 
-              // no prefix plugin
-              command = m.text.trim().split(/\s+/g)?.[0]
-              handler = pluginsNoPrefix.get(command);
-              if (handler) {
-                const jid = m.key.remoteJid
-                const prefix = null
-                const text = m.text.slice(command.length).trim() || null;
-                if (text === '-h') {
-                  await wa.sendText(m.chatId, pluginHelpSerialize(handler))
-                } else {
-                  await handler({ sock, jid, text, m, q, prefix, command });
-                }
-              }
+              const { valid, prefix } = prefixManager.isMatchPrefix(m.text)
+              const textNoPrefix = prefix ? m.text.slice(prefix.length).trim() : m.text.trim()
+              command = textNoPrefix.split(/\s+/g)?.[0]
 
-              // prefix plugin
-              else {
-                const { valid, prefix } = prefixManager.isMatchPrefix(m.text)
-                if (!valid) continue
-                const textNoPrefix = prefix ? m.text.slice(prefix.length).trim() : m.text
-                command = textNoPrefix.trim().split(/\s+/g)?.[0]
-                handler = plugins.get(command);
-                if (handler) {
+              const handler = pluginManager.plugins.get(command)
+              if (handler) {
+                if (valid || handler.bypassPrefix) {
                   const jid = m.key.remoteJid
-                  const text = textNoPrefix.slice(command.length).trim() || null;
+                  const text = textNoPrefix.slice(command.length + 1) // command text => |text|
+                  console.log(text)
                   if (text === '-h') {
-                    await wa.sendText(m.chatId, pluginHelpSerialize(handler))
+                    await sendText(m.chatId, pluginHelpSerialize(handler))
                   } else {
                     await handler({ sock, jid, text, m, q, prefix, command });
                   }
                 }
+
               }
+
             } catch (e) {
               console.error(e.stack)
               const errorLine = getErrorLine(e.stack) || 'gak tauu..'
-              const print = `🤯 *plugin fail*\n✏️ used command: ${command}\n📄 dir: ${handler.dir}\n🐞 line: ${errorLine}\n✉️ error message:\n${e.message}`
-              await react(m, '🥲')
+              const print = `🤯 *plugin fail*\n✏️ used command: ${command}\n📄 dir: ${handler?.dir}\n🐞 line: ${errorLine}\n✉️ error message:\n${e.message}`
+              //await react(m, '🥲')
               await sendText(m.chatId, print, m)
               continue
             }
@@ -412,12 +554,62 @@ const startSock = async () => {
       }
 
     }
+
+
+
+
   });
 
-  //if (global.sock) delete global.sock
-  //global.sock = sock
+  if (global.sock) delete global.sock
+  global.sock = sock
+
 }
 
-startSock()
+export { pluginManager, bot, store, sock }
 
-export { sock, store, bot, prefixManager, user, plugins, pluginsNoPrefix };
+
+
+const credsPath = path.join(import.meta.dirname, 'auth/creds.json')
+const credsExist = await safeRun(fs.promises.access, credsPath)
+if (!credsExist.ok) {
+  console.log('no creds found. starting new login')
+  // interface
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  const ask = (question) => new Promise((resolve) => rl.question(question, resolve));
+
+  const loginMethod = ['1', '2', '3']
+  let userLoginMethod
+  let valid
+  let botPhoneNumber
+  do {
+    const question = `select your login method:\n1. pairing code\n2. qr scan\n3. nevermind\ntype number only > `
+    userLoginMethod = await ask(question)
+    valid = loginMethod.includes(userLoginMethod)
+    if (!valid) console.log(`${userLoginMethod} is invalid try again\n`)
+  } while (!valid)
+
+  if (userLoginMethod === loginMethod[0]) {
+    const question = `enter bot's phone number (6281xxx) or type exit to exit : `
+    botPhoneNumber = await ask(question)
+    if (botPhoneNumber === 'exit') {
+      console.log('bye!')
+      process.exit(0)
+    }
+    startSock({ pn: botPhoneNumber })
+  } else if (userLoginMethod === loginMethod[1]) {
+    startSock({ qr: true })
+  } else if (userLoginMethod === loginMethod[2]) {
+    console.log('waduh knp tuh kira kira')
+  }
+
+  rl.close()
+  console.log('readline closed')
+
+} else {
+  console.log('start bot as usual')
+  startSock()
+}
