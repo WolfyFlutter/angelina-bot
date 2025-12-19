@@ -23,7 +23,7 @@ import { safeRun, consoleMessage, getErrorLine, sendText, pluginHelpSerialize, l
 import UserManager, { Permission } from './system/user-manager.js'
 import PrefixManager from './system/prefix-manager.js'
 import PluginManager from './system/plugin-manager.js'
-import allPath from "./system/allPath.js";
+import allPath from "./system/all-path.js";
 import patchMessageBeforeSending from "./system/patch-message-before-send.js";
 import serialize from "./system/serialize.js";
 

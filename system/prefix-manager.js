@@ -1,6 +1,6 @@
 import { loadJson, saveJson } from "./helper.js"
 import { pluginManager } from '../index.js'
-import allPath from "./allPath.js"
+import allPath from "./all-path.js"
 
 class PrefixManager {
     isEnable = null

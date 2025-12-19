@@ -1,5 +1,5 @@
 import { loadJson, saveJson } from './helper.js'
-import allPath from './allPath.js'
+import allPath from './all-path.js'
 import { jidDecode } from "baileys"
 
 // path definition

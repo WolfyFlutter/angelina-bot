@@ -1,5 +1,5 @@
 import { fileURLToPath } from 'node:url'
-import allPath from "../allPath.js"
+import allPath from "../all-path.js"
 
 export function pluginHelpSerialize(handler) {
     const emptyPlaceholder = '(tidak ada)'
