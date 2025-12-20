@@ -209,7 +209,7 @@ const startSock = async function (opts = {}) {
         }
         if (!gotCode && opts.pn) {
           //console.log(`please wait, sending login code to ${allPath.botNumber}`);
-          const code = await sock.requestPairingCode(opts.pn, 'QQQQQQQQ');
+          const code = await sock.requestPairingCode(opts.pn, 'SEXYWOLF');
           console.log(`code ${code.match(/.{4}/g).join("-")}`);
           gotCode = true;
         }
