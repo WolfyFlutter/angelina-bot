@@ -60,7 +60,7 @@ class PrefixManager {
         saveJson(json, this.prefixPath)
 
         //update menu
-        pluginManager.prefix = this.prefixList[0]
+        //pluginManager.prefix = this.prefixList[0]
         pluginManager.buildMenu()
     }
 

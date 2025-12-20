@@ -3,16 +3,17 @@ import allPath from "../all-path.js"
 
 export function pluginHelpSerialize(handler) {
     const emptyPlaceholder = '(tidak ada)'
-    const notFound = 'unknown'
+    const notFound = '-'
     const header = `*📖 dokumentasi plugin*\n\n`
-    const name = `*name* ${handler.pluginName}\n\n`
-    const category = `*category* ${handler.category.join(', ') || emptyPlaceholder}\n\n`
-    const command = `*command* ${handler.command.join(', ')}\n\n`
-    const needPrefix = `*bypass prefix* ${handler?.config?.bypassPrefix ? 'yes' : 'no'}\n\n`
-    const desc = `*description*\n${handler.help || emptyPlaceholder}\n\n`
-    const version = `version: ${handler.meta?.version || notFound}\n`
-    const author = `author: ${handler.meta?.author || notFound}\n`
-    const note = `note: ${handler.meta?.note || notFound}\n`
-    const dir = `*lokasi file* ./${fileURLToPath(handler.dir).replace(allPath.root,'').replaceAll('\\','/')}`
-    return header + name + desc + command + category + needPrefix + version + author + note + dir
+    const name = `*name*\n${handler.pluginName}\n\n`
+    const category = `*category*\n${handler.category.join(', ') || emptyPlaceholder}\n\n`
+    const command = `*command*\n${handler.command.join(', ')}\n\n`
+
+    const needPrefix = `*bypass prefix*\n${handler?.config?.bypassPrefix ? 'yes' : 'no'}\n\n`
+    const desc = `*description*\n${handler.description || emptyPlaceholder}\n\n`
+    const version = `*version*\n${handler.meta?.version || notFound}\n\n`
+    const author = `*author ✨*\n${handler.meta?.author || notFound}\n\n`
+    const note = `*author's note*\n${handler.meta?.note || notFound}\n\n`
+    const dir = `*lokasi file*\n./${fileURLToPath(handler.dir).replace(allPath.root, '').replaceAll('\\', '/')}`
+    return header + name + desc + command + category  + needPrefix  + version + author + note + dir
 }

@@ -3,10 +3,14 @@ import { vString } from './general-helper.js'
 
 
 export async function sendText(jid, text, replyTo) {
+    vString(jid, "param jid")
+    vString(text, "param text")
     return await sock.sendMessage(jid, { text }, { quoted: replyTo })
 }
 
 export async function editText(jid, m, text) {
+    vString(jid, "param jid")
+    vString(jid, "param text")
     return await sock.sendMessage(jid, {
         text,
         edit: m.key

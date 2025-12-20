@@ -2,14 +2,14 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 
+import { botInfo } from './bot-info.js'
+import { prefixManager } from './helper.js'
+
 export default class PluginManager {
     categoryArray = []
     categorySet = new Set()
     mapCatWithCmdArray = new Map()
     plugins = new Map()
-    bulletinLevel1 = '❄️'
-    bulletinLevel2 = '- '
-    prefix = ''
     forMenu = {
         menuText: '',
         menuAllText: '',
@@ -17,18 +17,22 @@ export default class PluginManager {
     }
 
     buildMenu() {
+        console.log('menu build')
         this.forMenu.category.clear()
         this.forMenu.menuAllText = ''
         this.forMenu.menuText = ''
 
         this.mapCatWithCmdArray.clear()
 
+        const prefix = prefixManager.getInfo()
+
         const pa = Array.from(this.plugins)
         pa.forEach(p => {
             const catArr = p[1].category
             catArr.forEach(cat => {
-                if(!this.mapCatWithCmdArray.get(cat)) this.mapCatWithCmdArray.set(cat, [])
-                this.mapCatWithCmdArray.get(cat).push(p[1].config?.bypassPrefix ? p[0] : this.prefix + '' + p[0])
+                if (!this.mapCatWithCmdArray.get(cat)) this.mapCatWithCmdArray.set(cat, [])
+                this.mapCatWithCmdArray.get(cat).push(p[1].config?.bypassPrefix ? p[0]
+                    : ((prefix.isEnable ? prefix.prefixList[0] : '') + p[0]))
             })
 
         })
@@ -38,12 +42,12 @@ export default class PluginManager {
 
         // [menu render]
         // main menu (nampilin caregory only)
-        this.forMenu.menuText = this.categoryArray.map(c => `${this.bulletinLevel1}${c}`).join('\n')
+        this.forMenu.menuText = this.categoryArray.map(c => `${botInfo.b1f}${c}${botInfo.b1b}`).join('\n')
 
         // menu category (map, nampilin command append by category)
         const ar = Array.from(this.mapCatWithCmdArray.entries())
-            .map(v => [v[0], `${this.bulletinLevel1}${v[0]}\n${v[1]
-                .map(c => `${this.bulletinLevel2}${c}`)
+            .map(v => [v[0], `${botInfo.b1f}${v[0]}${botInfo.b1b}\n${v[1]
+                .map(c => `${botInfo.b2f}${c}${botInfo.b2b}`)
                 .join('\n')}`])
         ar.forEach(v => this.forMenu.category.set(v[0], v[1]))
 
@@ -52,9 +56,9 @@ export default class PluginManager {
     }
 
     async loadPlugins() {
+        console.log('laod plugin')
         const cd = import.meta.dirname
         this.plugins.clear()
-        //this.categoryArray = Array.from(Object.values(Category))
 
         // plugin path
         const allPluginPath = [
@@ -64,7 +68,6 @@ export default class PluginManager {
         for (let i = 0; i < allPluginPath.length; i++) {
             await this.processAllPluginsFromDir(allPluginPath[i])
         }
-        this.buildMenu()
     }
 
     async processAllPluginsFromDir(folderPath) {
@@ -96,7 +99,7 @@ export default class PluginManager {
 
                 handler.dir = fileUrl
 
-                // add to map
+                // add to map also handle multiple command
                 command.forEach(cmd => {
                     this.plugins.set(cmd, handler)
                 })
@@ -126,27 +129,13 @@ export default class PluginManager {
         if (!singleWord(command)) return error(`handler.command must an array. at least have 1 element and no space`)
         for (let i = 0; i < command?.length; i++) {
             if (!singleWord(command[i])) return error(`handler.command array has invalid command: ${command[i]}. must not containt any whitespace`)
-
-            //console.log(command)
-            //if(sameCommand) return error(`plugin ini memiliki command yang sudah digunakan yaitu *${command}* bentrok dengan plugin ${sameCommand.pluginName}`)
         }
 
         // category checking
         if (!arrayNotEmpty(category)) return error(`handler.category invalid`)
-        for (let i = 0; i < category?.length; i++) {
-            //if (!this.categoryArray.includes(category[i])) return error(`handler.category array has invalid category: ${category[i]}`)
-            //(!this.categorySet.has(category[i])) this.categorySet.add(category[i])
-        }
 
-        // 
         return sucess('no error')
     }
-}
-
-export class Category {
-    static SYSTEM = 'system'
-    static EXAMPLE = 'example'
-    static DEBUG = 'debug'
 }
 
 const removeBust = s => s.split('?')[0]

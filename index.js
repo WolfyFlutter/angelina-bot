@@ -8,32 +8,33 @@ import makeWASocket, {
   fetchLatestWaWebVersion,
   delay,
   isJidGroup,
-  areJidsSameUser
+  areJidsSameUser,
 } from "baileys";
 import P from 'pino'
 import NodeCache from '@cacheable/node-cache';
+import qrTerminal from 'qrcode-terminal'
+
 
 // node js import
 import readline from 'node:readline'
 import fs from 'node:fs'
 import path from 'node:path'
+import { fileURLToPath } from "node:url";
 
 // local import
 import { safeRun, consoleMessage, getErrorLine, sendText, pluginHelpSerialize, loadJson } from './system/helper.js'
-import UserManager, { Permission } from './system/user-manager.js'
-import PrefixManager from './system/prefix-manager.js'
-import PluginManager from './system/plugin-manager.js'
+
 import allPath from "./system/all-path.js";
 import patchMessageBeforeSending from "./system/patch-message-before-send.js";
 import serialize from "./system/serialize.js";
+import UserManager, { Permission } from './system/user-manager.js'
+import PrefixManager from './system/prefix-manager.js'
+import PluginManager from './system/plugin-manager.js'
 
-const prefixManager = new PrefixManager()
-const pluginManager = new PluginManager()
-if(prefixManager.isEnable) pluginManager.prefix = prefixManager.prefixList[0]
-pluginManager.buildMenu()
+
 
 const msgRetryCounterCache = new NodeCache();
-const user = new UserManager();
+const userManager = new UserManager();
 
 let sock //= makeWASocket({})
 const groupMetadata = new Map()
@@ -43,12 +44,7 @@ const bot = {
   pn: null,
   lid: null,
   pushname: null,
-  displayName: null,
-  bulletin1: null,
-  bulletin2: null
 };
-const botInfo = loadJson(allPath.botInfo)
-Object.assign(bot, botInfo)
 
 let gotCode = false;
 
@@ -68,9 +64,6 @@ const consoleStream = {
 const logger = P({ level: "error" })
 
 
-
-const { saveCreds, state } = await useMultiFileAuthState(allPath.baileysAuth);
-const { version } = await fetchLatestWaWebVersion()
 
 // fungsi titip
 // const updateChats = (jid, partialUpdate) => {
@@ -121,19 +114,31 @@ const store = {
 }
 
 
+
+
+const prefixManager = new PrefixManager()
+const pluginManager = new PluginManager()
+
 // #GLOBAL VARIABLE
-global.user = user
+global.user = userManager
 global.bot = bot;
 global.store = store;
 global.pm = pluginManager
 global.fs = fs
 global.msgRetryCounterCache = msgRetryCounterCache
 
+const { saveCreds, state } = await useMultiFileAuthState(allPath.baileysAuth);
+const { version } = await fetchLatestWaWebVersion()
+
+const init = async () => {
+  await pluginManager.loadPlugins()
+  pluginManager.buildMenu()
+}
 
 const startSock = async function (opts = {}) {
-  await pluginManager.loadPlugins()
 
-  console.log("▶️ fungsi startSock di panggil");
+
+  console.log("✔️ fungsi startSock di panggil");
 
   sock = makeWASocket({
     version,
@@ -142,7 +147,6 @@ const startSock = async function (opts = {}) {
       /** caching makes the store faster to send/recv messages */
       keys: makeCacheableSignalKeyStore(state.keys, logger),
     },
-    browser: Browsers.windows("Chrome"),
     msgRetryCounterCache,
     cachedGroupMetadata: store.getGroupMetadata,
     logger,
@@ -155,6 +159,12 @@ const startSock = async function (opts = {}) {
   });
 
   sock.ev.process(async (ev) => {
+    // if (ev['presence.update'] || ev['message-receipt.update']) {
+
+    // } else {
+    //   console.log(ev)
+    // }
+
     // handle koneksi
     if (ev["connection.update"]) {
       const update = ev["connection.update"];
@@ -194,6 +204,7 @@ const startSock = async function (opts = {}) {
       // pairing code
       else if (qr) {
         if (opts.qr) {
+          qrTerminal.generate(qr, { small: true })
           console.log(qr);
         }
         if (!gotCode && opts.pn) {
@@ -407,9 +418,9 @@ const startSock = async function (opts = {}) {
             // actual notification message
 
             // filter jid, blocked
-            const v = user.isAuth(message.key)
+            const v = userManager.isAuth(message.key)
             if (v.permission === Permission.BLOCKED) {
-              console.log(v.message, user.blockedJids.get(v.jid) + ' at ' + (store.groupMetadata.get(message.key?.remoteJid)?.subject || message.key.remoteJid) + '\n')
+              console.log(v.message, userManager.blockedJids.get(v.jid) + ' at ' + (store.groupMetadata.get(message.key?.remoteJid)?.subject || message.key.remoteJid) + '\n')
               continue
             }
 
@@ -417,6 +428,17 @@ const startSock = async function (opts = {}) {
             const m = serialize(message)
             const q = m.q
             const mPrint = consoleMessage(m, q)
+
+            // event
+            //console.log('babarbabr', m)
+            // deteksi view once
+            // const viewOnce = m?.message?.[m.type]?.viewOnce
+            // if (viewOnce) {
+            //   //await sock.sendMessage(m.chatId, {text: 'view once.. restore ah'}, {quoted: m})
+            //   m.message[m.type].viewOnce = false
+            //   await sock.sendMessage(m.chatId, { forward: m, contextInfo: { isForwarded: false } }, { quoted: m })
+            //   continue
+            // }
 
             if (v.permission === Permission.NOT_ALLOWED) {
 
@@ -440,9 +462,9 @@ const startSock = async function (opts = {}) {
               const textNoPrefix = prefix ? m.text.slice(prefix.length).trim() : m.text.trim()
               command = textNoPrefix.split(/\s+/g)?.[0]
 
-              const handler = pluginManager.plugins.get(command)
+              handler = pluginManager.plugins.get(command)
               if (handler) {
-                if (valid || handler.bypassPrefix) {
+                if (valid || handler.config?.bypassPrefix) {
                   const jid = m.key.remoteJid
                   const text = textNoPrefix.slice(command.length + 1) // command text => |text|
                   console.log(text)
@@ -458,7 +480,7 @@ const startSock = async function (opts = {}) {
             } catch (e) {
               console.error(e.stack)
               const errorLine = getErrorLine(e.stack) || 'gak tauu..'
-              const print = `🤯 *plugin fail*\n✏️ used command: ${command}\n📄 dir: ${handler?.dir}\n🐞 line: ${errorLine}\n✉️ error message:\n${e.message}`
+              const print = `🤯 *plugin fail*\n✏️ used command: ${command}\n📄 dir: ${fileURLToPath(handler.dir).replace(allPath.root, '').replaceAll('\\', '/')}\n🐞 line: ${errorLine}\n✉️ error message:\n${e.message}`
               //await react(m, '🥲')
               await sendText(m.chatId, print, m)
               continue
@@ -517,9 +539,9 @@ const startSock = async function (opts = {}) {
             // actual notification message
 
             // filter jid, blocked
-            const v = user.isAuth(message.key)
+            const v = userManager.isAuth(message.key)
             if (v.permission === Permission.BLOCKED) {
-              console.log('[append] ' + v.message, user.blockedJids.get(v.jid) + ' at ' + (store.groupMetadata.get(message.key?.remoteJid)?.subject || message.key.remoteJid) + '\n')
+              console.log('[append] ' + v.message, userManager.blockedJids.get(v.jid) + ' at ' + (store.groupMetadata.get(message.key?.remoteJid)?.subject || message.key.remoteJid) + '\n')
               continue
             }
 
@@ -565,7 +587,7 @@ const startSock = async function (opts = {}) {
 
 }
 
-export { pluginManager, bot, store, sock }
+export { pluginManager, bot, store, sock, prefixManager, userManager }
 
 
 
@@ -599,8 +621,10 @@ if (!credsExist.ok) {
       console.log('bye!')
       process.exit(0)
     }
+    init()
     startSock({ pn: botPhoneNumber })
   } else if (userLoginMethod === loginMethod[1]) {
+    init()
     startSock({ qr: true })
   } else if (userLoginMethod === loginMethod[2]) {
     console.log('waduh knp tuh kira kira')
@@ -611,5 +635,6 @@ if (!credsExist.ok) {
 
 } else {
   console.log('start bot as usual')
+  init()
   startSock()
 }
