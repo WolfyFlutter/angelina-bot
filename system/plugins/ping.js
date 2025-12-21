@@ -5,7 +5,10 @@ import { botInfo, textOnlyMessage } from '../helper.js'
  */
 
 async function handler({ sock, m, q, text, jid, command, prefix }) {
-    if (!textOnlyMessage(m, q)) return
+    if (!textOnlyMessage(m)) return
+    if (q) return
+    if (text) return
+    
     await sock.sendMessage(jid, { text: 'pong' }, { quoted: m })
 }
 
@@ -23,7 +26,7 @@ handler.config = {
 handler.meta = {
     fileName: 'ping.js',
     version: '1',
-    author: botInfo.authorName,
+    author: botInfo.an,
     note: 'awawawa solid solid solid',
 }
 export default handler

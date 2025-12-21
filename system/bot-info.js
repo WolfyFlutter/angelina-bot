@@ -4,9 +4,11 @@ import { loadJson, saveJson } from './helper.js'
 const json = loadJson(allPath.botInfo)
 
 const botInfo = {
-    displayName: json.displayName,
-    secText: json.secText,
-    authorName: json.authorName,
+    tm: json.tm,
+    stm: json.stm,
+    dn: json.dn,
+    st: json.st,
+    an: json.an,
     b1f: json.b1f,
     b1b: json.b1b,
     b2f: json.b2f,
@@ -17,16 +19,25 @@ const botInfo = {
 
 export { botInfo }
 
+export function updateThumbnailMenu(url) {
+    botInfo.tm = url
+    saveJson(botInfo, allPath.botInfo)
+}
+
+export function updateSmallThumbnailMenu(url) {
+    botInfo.stm = url
+    saveJson(botInfo, allPath.botInfo)
+}
+
 export function updateDisplayName(name) {
-    botInfo.displayName = name
+    botInfo.dn = name
     saveJson(botInfo, allPath.botInfo)
 }
 
 export function updateSecondaryText(text) {
-    botInfo.secText = text
+    botInfo.st = text
     saveJson(botInfo, allPath.botInfo)
 }
-
 
 export function updateBulletin1(front, back) {
     botInfo.b1f = front

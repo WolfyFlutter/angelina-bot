@@ -7,12 +7,14 @@ import { pluginManager, sendText, botInfo, updateBulletin2, userManager, textOnl
 async function handler({ sock, m, q, text, jid, command, prefix }) {
     // return return
     if (!userManager.trustedJids.has(m.senderId)) return
-    if (!textOnlyMessage(m, q)) return
+    if (!textOnlyMessage(m)) return
+    if(q) return
 
     if (!text?.trim()) return sendText(jid, `mana param nya?`, m)
 
     if (text.trim() === 'get') {
-        const bulletinForShare = 'b2 ' + botInfo.b2f + 'text' + botInfo.b2b
+        const pc = `${prefix}${command}`
+        const bulletinForShare = pc + ' ' + botInfo.b2f + 'text' + botInfo.b2b
         await sendText(jid, bulletinForShare)
         return
     }
@@ -36,7 +38,7 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
 handler.pluginName = 'bulletin level 2'
 handler.description = 'command buat atur bulletin level 2.\n' +
     'cara pakai\n' +
-    '*b1 ᯓ★ text ★* buat set new bulletin.\n' +
+    '*b2 ᯓ★ text ★* buat set new bulletin.\n' +
     '*b2 get* buat dapetin current bulletin.\n' +
     '*b2 clear* buat bersihin bulletin.'
 handler.command = ['b2']
@@ -44,14 +46,13 @@ handler.category = ['set']
 
 handler.config = {
     systemPlugin: true,
-    bypassPrefix: true,
     antiDelete: true,
 }
 
 handler.meta = {
     fileName: 'set-bulletin-level-2.js',
     version: '1',
-    author: botInfo.authorName,
+    author: botInfo.an,
     note: 'cia cia cia',
 }
 

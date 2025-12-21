@@ -26,7 +26,7 @@ export function tag(lid) {
     return '@' + lid.split('@')[0]
 }
 
-export function textOnlyMessage(m, q) {
+export function textOnlyMessage(m) {
     const { message } = m
-    return (message?.conversation || message?.extendedTextMessage) && !q
+    return message?.conversation || message?.extendedTextMessage
 }

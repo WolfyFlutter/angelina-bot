@@ -8,12 +8,14 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
 
     // return return
     if (!userManager.trustedJids.has(m.senderId)) return
-    if (!textOnlyMessage(m, q)) return
+    if (!textOnlyMessage(m)) return
+    if(q) return
 
     if (!text?.trim()) return sendText(jid, `mana param nya?`, m)
 
     if (text.trim() === 'get') {
-        const bulletinForShare = 'b1 ' + botInfo.b1f + 'text' + botInfo.b1b
+        const pc = `${prefix}${command}`
+        const bulletinForShare = pc + ' ' + botInfo.b1f + 'text' + botInfo.b1b
         await sendText(jid, bulletinForShare)
         return
     }
@@ -45,14 +47,13 @@ handler.category = ['set']
 
 handler.config = {
     systemPlugin: true,
-    bypassPrefix: true,
     antiDelete: true,
 }
 
 handler.meta = {
     fileName: 'set-bulletin-level-1.js',
     version: '1',
-    author: botInfo.authorName,
+    author: botInfo.an,
     note: 'furry itu seksi',
 }
 

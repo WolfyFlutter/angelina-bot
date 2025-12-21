@@ -57,7 +57,7 @@ class PrefixManager {
 
     async save() {
         const json = { isEnable: this.isEnable, prefixList: Array.from(this.prefixList) }
-        saveJson(json, this.prefixPath)
+        saveJson(json, allPath.prefix)
 
         //update menu
         //pluginManager.prefix = this.prefixList[0]
