@@ -4,6 +4,8 @@ TAPI KALAU MAU COBAIN BOLEH.. CUMA BELUM FINAL HEHE.. SELALU GW UPDATE KOK. DAN 
 TODO : 
 - BIKIN PLUGIN MANAGER / PLUGIN STORE
 
+- BIKIN MEKANISME INIT OWNER PERTAMA KALI SELAIN CARA EDIT LID MANUAL
+
 - BIKIN STORE LABEL
 
 - BIKIN VIDEO / CARA INSTALL / PAKA FITUR BOT
@@ -52,58 +54,35 @@ serialize quoted message object
 
 plugin example
 ```javascript
-import { sendText, tag, Category } from '../helper.js'
+import { textOnlyMessage, sendText } from '../../system/helper.js'
 
 /**
- * @param {Object} params
- * @param {import("baileys").WASocket} params.sock
+ * @param {import('../../system/types/plugin.js').HandlerParams} params
  */
 
-async function handler({ sock, jid, text, m, q, prefix, command }) {
-    const header =   `hai!\n`
-    const pushName = `pushname: ${m.pushName}\n`
-    const id =       `lid/pn  : ${m.senderId}\n`
-    const tagUser =  `tag     : ${tag(m.senderId)}\n`
-    const teksmu =   `text    : ${text}\n`
-    const prefixmu = `prefix  : ${prefix}\n`
-    const commandmu =`command : ${command}\n`
-    const chatId   = `chat id : ${jid}`
-    const print = '```' + header + pushName + id + tagUser + teksmu + prefixmu + commandmu + chatId + '```'
-    return await sendText(jid, print, m)
+async function handler({ sock, m, q, text, jid, command, prefix }) {
+    if (!textOnlyMessage(m)) return
+    if (q) return
+    if (text) return
+    await sendText(sock, jid, `halo juga`, m)
+    return
 }
 
-handler.bypassPrefix = false
-handler.pluginName = 'example title'
-handler.command = ['example']
-handler.alias = ['eg']
-handler.category = [Category.DEBUG]
-handler.help = 'taruh deskripsi kamu disini'
+handler.pluginName = 'halo'
+handler.description = 'deskripsi kamu'
+handler.command = ['halo']
+handler.category = ['test']
 
+handler.meta = {
+    fileName: 'halo.js',
+    version: '1',
+    author: 'ambatukam',
+    note: 'ambasing',
+}
 export default handler
 ```
 
-another plugin example
-```javascript
-import { sendText, commandOnly, Category } from './../helper.js'
-
-async function handler({ m, text, jid}) {
-   if (commandOnly(m, text)) return await sendText(jid, 'solid', m)
-}
-
-handler.pluginName = 'ping'
-handler.command = ['ping']
-handler.alias = []
-handler.category = [Category.BOT]
-handler.help = 'buat test apakah bot respond apa kagak.'
-
-export default handler
-```
 
 IMPORTANT
 
-tambah nomor bot kamu di ./src/static.js
-
-kemudian add owner di ./data/trusted-jid.json (pakai lid dan pn)
-lid biar work di grup, pn buat work di chat pribadi
-
-FITUR BOT : custom store, user manajement, chat manajement, plugin manajement. readme akan saya update lagi kedepannya. untuk command fitur nya kalian liat sendiri dulu ya di kode wkwkw.
+dah support terminal, kalau mau coba langsung aja npm test, tapi sebelum itu edit dulu file user/data/trusted-jids.json tambahin lid mu disana biar jadi owner
