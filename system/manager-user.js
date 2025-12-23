@@ -89,13 +89,17 @@ export default class UserManager {
   }
 
   groupChatToggle(chatMode) {
+    if(this.groupChatListenMode === chatMode) return false
     this.groupChatListenMode = chatMode
     this.saveChatListenMode()
+    return true
   }
 
   privateChatToggle(chatMode) {
+    if (this.privateChatListenMode === chatMode) return false
     this.privateChatListenMode = chatMode
     this.saveChatListenMode()
+    return true
   }
 
   manageTrustedJids(trustOrRemove, lid, note = "(lupa di kasih note)") {
@@ -197,13 +201,13 @@ export default class UserManager {
 
 export class GroupListenMode {
   static SELF = 0
-  static EVERYONE = 1
+  static PUBLIC = 1
   static DEFAULT = 2
 }
 
 export class PrivateListenMode {
   static SELF = 0
-  static EVERYONE = 1
+  static PUBLIC = 1
 }
 
 export class Permission {

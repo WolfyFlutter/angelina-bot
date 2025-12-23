@@ -1,14 +1,13 @@
-import { sock } from '../../index.js'
 import { vString } from './general-helper.js'
 
 
-export async function sendText(jid, text, replyTo) {
+export async function sendText(sock, jid, text, replyTo) {
     vString(jid, "param jid")
     vString(text, "param text")
     return await sock.sendMessage(jid, { text }, { quoted: replyTo })
 }
 
-export async function editText(jid, m, text) {
+export async function editText(sock, jid, m, text) {
     vString(jid, "param jid")
     vString(jid, "param text")
     return await sock.sendMessage(jid, {
@@ -18,7 +17,7 @@ export async function editText(jid, m, text) {
 }
 
 // thumbnail
-export async function sendFancyText(jid, opts = {thumbnailUrlOrBuffer, renderLargerThumbnail, title, body, text, replyTo}) {
+export async function sendFancyText(sock, jid, opts = {thumbnailUrlOrBuffer, renderLargerThumbnail, title, body, text, replyTo}) {
     vString(jid, "param jid")
 
     const {

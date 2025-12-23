@@ -8,14 +8,19 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
     if (!textOnlyMessage(m)) return
     if (q) return
     if (text) return
-    
-    await sock.sendMessage(jid, { text: 'pong' }, { quoted: m })
+
+    const start = Date.now()
+    const pr = await sock.sendMessage(jid, { text: "wait..." })
+    const end = Date.now()
+    const result = `ping time: ${end - start}ms`
+    await sock.sendMessage(jid, {text: result, edit: pr.key})
+    return
 }
 
-handler.pluginName = 'ping'
-handler.description = 'buat cek bot respond apa kagak.. simply just type ping'
-handler.command = ['ping']
-handler.category = ['bot']
+handler.pluginName = 'ping 2'
+handler.description = 'sama kaya ping.. tapi ada durasi delay sendMessage'
+handler.command = ['p2']
+handler.category = ['system']
 
 handler.config = {
     systemPlugin: true,

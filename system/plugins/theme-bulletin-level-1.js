@@ -9,14 +9,14 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
     // return return
     if (!userManager.trustedJids.has(m.senderId)) return
     if (!textOnlyMessage(m)) return
-    if(q) return
+    if (q) return
 
-    if (!text?.trim()) return sendText(jid, `mana param nya?`, m)
+    if (!text?.trim()) return sendText(sock, jid, `mana param nya?`, m)
 
     if (text.trim() === 'get') {
-        const pc = `${prefix}${command}`
+        const pc = `${prefix||''}${command}`
         const bulletinForShare = pc + ' ' + botInfo.b1f + 'text' + botInfo.b1b
-        await sendText(jid, bulletinForShare)
+        await sendText(sock, jid, bulletinForShare)
         return
     }
 
@@ -32,7 +32,7 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
     const back = match?.[2] || ''
     updateBulletin1(front, back)
     pluginManager.buildMenu()
-    await sendText(jid, `sip, coba di test. ketik aja menu`)
+    await sendText(sock, jid, `sip, coba di test. ketik aja menu`)
     return
 }
 
@@ -43,7 +43,7 @@ handler.description = 'command buat atur bulletin level 1.\n' +
     '*b1 get* buat dapetin current bulletin.\n' +
     '*b1 clear* buat bersihin bulletin.'
 handler.command = ['b1']
-handler.category = ['set']
+handler.category = ['theme']
 
 handler.config = {
     systemPlugin: true,

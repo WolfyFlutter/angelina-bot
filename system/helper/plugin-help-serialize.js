@@ -17,5 +17,5 @@ export function pluginHelpSerialize(handler) {
     const author = `${b.b3f}author ✨${b.b3b}\n${handler.meta?.author || notFound}\n\n`
     const note = `${b.b3f}author's note${b.b3b}\n${handler.meta?.note || notFound}\n\n`
     const dir = `${b.b3f}lokasi file${b.b3b}\n./${fileURLToPath(handler.dir).replace(allPath.root, '').replaceAll('\\', '/')}`
-    return header + name + desc + command + category + needPrefix + author + note + fileName + version + dir
+    return header + name + desc + category + command + needPrefix + author + note + fileName + version + dir
 }

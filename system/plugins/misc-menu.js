@@ -6,7 +6,7 @@ import { pluginManager, sendText, sendFancyText, tag, pickRandom, botInfo, textO
 
 async function handler({ sock, m, q, text, jid, command, prefix }) {
 
-    // return return
+    // return return hm
     if (!textOnlyMessage(m)) return
     if (q) return
 
@@ -15,10 +15,9 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
         const header = `halo kak ${tag(m.senderId)} berikut kategori plugin yang tersedia\n\n`
         const content = pluginManager.forMenu.menuText
         const sampleCommand = `${pc} ${pickRandom(pluginManager.categoryArray)}`
-        const footer = `\n\ngunakan command *${pc} <category>* untuk melihat list command`
-            + `\ncontoh: \`${sampleCommand}\``
+        const footer = `\n\nketik *${sampleCommand}* buat buka menu`
         const print = header + content + footer
-        return await sendFancyText(jid, {
+        return await sendFancyText(sock, jid, {
             text: print,
             title: botInfo.dn,
             body: botInfo.st,
@@ -28,11 +27,11 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
 
     if (text === 'all') {
         const content = pluginManager.forMenu.menuAllText
-        const sampleCommand = `${pickRandom(pluginManager.mapCatWithCmdArray.get(pickRandom(pluginManager.categoryArray)))}`
-        const footer = `\n\ngunakan perintah *<command> -h* untuk mengetahui fungsi command.` +
-            `\ncontoh: \`${sampleCommand} -h\``
+        const sampleCommand = `${pickRandom(pluginManager.mapCatWithCmdArray.get(pickRandom(pluginManager.categoryArray))).cmd}`
+        const footer = `\n\ngunakan param *-h* untuk mengetahui fungsi command.` +
+            `\ncontoh: *${sampleCommand} -h*`
         const print = content + footer
-        return await sendFancyText(jid, {
+        return await sendFancyText(sock, jid, {
             text: print,
             title: botInfo.dn,
             body: botInfo.st,
@@ -42,12 +41,12 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
     }
 
     const validCategory = pluginManager.forMenu.category.get(text)
-    if (!validCategory) return sendText(jid, `maaf kak ${tag(m.senderId)}... menu dengan kategori *${text}* tidak tersedia`)
-    const randomCmd3 = pickRandom(pluginManager.mapCatWithCmdArray.get(text))
-    const randomHelp3 = randomCmd3 ? `\n\ngunakan perintah *<command> -h* untuk mengetahui fungsi command.` +
-        `\ncontoh: \`${randomCmd3} -h\`` : `\nwaduh kosong`
-    const print = `${validCategory}${randomHelp3}`
-    return await sendFancyText(jid, {
+    if (!validCategory) return sendText(sock, jid, `maaf kak ${tag(m.senderId)}... menu dengan kategori *${text}* tidak tersedia`)
+    const content = pickRandom(pluginManager.mapCatWithCmdArray.get(text)).cmd
+    const footer = content ? `\n\ngunakan perintah *-h* untuk mengetahui fungsi command.` +
+        `\ncontoh: *${content} -h*` : `\nwaduh kosong`
+    const print = `${validCategory}${footer}`
+    return await sendFancyText(sock, jid, {
         text: print,
         title: botInfo.dn,
         body: botInfo.st,
@@ -63,7 +62,7 @@ handler.description = 'command ini buat nampiin menu.\n' +
     'menu <category>\n' +
     'menu all'
 handler.command = ['menu']
-handler.category = ['bot']
+handler.category = ['misc']
 
 handler.config = {
     systemPlugin: true,

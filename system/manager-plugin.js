@@ -7,7 +7,6 @@ import { prefixManager } from './helper.js'
 
 export default class PluginManager {
     categoryArray = []
-    categorySet = new Set()
     mapCatWithCmdArray = new Map()
     plugins = new Map()
     forMenu = {
@@ -27,16 +26,18 @@ export default class PluginManager {
         const prefix = prefixManager.getInfo()
 
         const pa = Array.from(this.plugins)
-        pa.forEach(p => {
+
+        // prefix command (for random display bottom help)
+        pa.forEach((p,i,plug) => {
             const catArr = p[1].category
             catArr.forEach(cat => {
                 if (!this.mapCatWithCmdArray.get(cat)) this.mapCatWithCmdArray.set(cat, [])
-                this.mapCatWithCmdArray.get(cat).push(p[1].config?.bypassPrefix ? p[0]
-                    : ((prefix.isEnable ? prefix.prefixList[0] : '') + p[0]))
+                this.mapCatWithCmdArray.get(cat).push({cmd: p[0], plugin: plug[i]})
             })
 
         })
 
+        // category list packed in array, (for bottom random category output and menu output)
         this.categoryArray = Array.from(this.mapCatWithCmdArray.keys()).sort()
 
 
@@ -47,7 +48,11 @@ export default class PluginManager {
         // menu category (map, nampilin command append by category)
         const ar = Array.from(this.mapCatWithCmdArray.entries())
             .map(v => [v[0], `${botInfo.b1f}${v[0]}${botInfo.b1b}\n${v[1]
-                .map(c => `${botInfo.b2f}${c}${botInfo.b2b}`)
+                .map(obj => {
+                    const p = obj.plugin[1].config?.bypassPrefix ? '' :
+                    prefix.isEnable ? prefix.prefixList[0] : ''
+                    return `${botInfo.b2f}${p}${obj.cmd}  _${obj.plugin[1].pluginName}_${botInfo.b2b}`
+                }).sort()
                 .join('\n')}`])
         ar.forEach(v => this.forMenu.category.set(v[0], v[1]))
 
@@ -126,7 +131,7 @@ export default class PluginManager {
         if (!stringNotEmpty(pluginName)) return error('handler.pluginName nya invalid. musti string, depan belakang gak boleh ada spasi')
 
         // command checking
-        if (!singleWord(command)) return error(`handler.command must an array. at least have 1 element and no space`)
+        if (!arrayNotEmpty(command)) return error(`handler.command must an array. at least have 1 element and no space`)
         for (let i = 0; i < command?.length; i++) {
             if (!singleWord(command[i])) return error(`handler.command array has invalid command: ${command[i]}. must not containt any whitespace`)
         }

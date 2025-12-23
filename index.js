@@ -2,7 +2,6 @@
 import makeWASocket, {
   makeCacheableSignalKeyStore,
   useMultiFileAuthState,
-  Browsers,
   DisconnectReason,
   jidNormalizedUser,
   fetchLatestWaWebVersion,
@@ -19,19 +18,20 @@ import qrTerminal from 'qrcode-terminal'
 import readline from 'node:readline'
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from "node:url";
 
 // local import
-import { safeRun, consoleMessage, getErrorLine, sendText, pluginHelpSerialize, loadJson } from './system/helper.js'
+import { safeRun } from './system/helper.js'
 
 import allPath from "./system/all-path.js";
 import patchMessageBeforeSending from "./system/patch-message-before-send.js";
-import serialize from "./system/serialize.js";
-import UserManager, { Permission } from './system/user-manager.js'
-import PrefixManager from './system/prefix-manager.js'
-import PluginManager from './system/plugin-manager.js'
+import UserManager from './system/manager-user.js'
+import PrefixManager from './system/manager-prefix.js'
+import PluginManager from './system/manager-plugin.js'
 
-
+// handler
+import messageReaction from "./belajar-handler/message-reaction.js";
+import messageUpsertHandler from "./system/handler/message-upsert.js";
+import presenceUpdate from "./system/handler/presence-update.js";
 
 const msgRetryCounterCache = new NodeCache();
 const userManager = new UserManager();
@@ -160,10 +160,13 @@ const startSock = async function (opts = {}) {
 
   sock.ev.process(async (ev) => {
     // if (ev['presence.update'] || ev['message-receipt.update']) {
+    //   console.log(ev)
 
     // } else {
-    //   console.log(ev)
+    //   //console.log(ev)
     // }
+
+    // console.log(ev)
 
     // handle koneksi
     if (ev["connection.update"]) {
@@ -370,211 +373,17 @@ const startSock = async function (opts = {}) {
       }
     }
 
-    // pesan
-    if (ev["messages.upsert"]) {
-      const bem = ev["messages.upsert"];
-      //console.log(bem)
-      const { messages, type } = bem;
+    if (ev['messages.upsert']) {
+      await messageUpsertHandler(sock, ev['messages.upsert'])
+    }
 
-      // NOTIFY
-      if (type === "notify") {
-        // NOTIFY
-        for (let i = 0; i < messages.length; i++) {
-          const message = messages[i];
-          try {
-            // empty message
-            if (!message.message) {
-              console.log("empty message");
-              continue
-            }
+    // handler
+    if (ev['messages.reaction']) {
+      await messageReaction(sock, ev['messages.reaction'])
+    }
 
-            // protocol message
-            else if (message.message?.protocolMessage) {
-              const protocolType = message.message?.protocolMessage?.type
-
-              // protocol delete
-              if (protocolType === 0) {
-                console.log(`protocol hapus, di hapus oleh ${message.pushName}`)
-                continue
-              }
-
-              // protocol edit
-              else if (protocolType === 14) {
-                console.log('protocol edit todo')
-                continue
-              }
-
-              // fallback for future notifi protocol handling
-              console.log("protocol unhandle");
-              continue
-            }
-
-            // no pushname message
-            else if (!message?.pushName) {
-              console.log("pesan tanpa pushname");
-              continue
-            }
-
-            // actual notification message
-
-            // filter jid, blocked
-            const v = userManager.isAuth(message.key)
-            if (v.permission === Permission.BLOCKED) {
-              console.log(v.message, userManager.blockedJids.get(v.jid) + ' at ' + (store.groupMetadata.get(message.key?.remoteJid)?.subject || message.key.remoteJid) + '\n')
-              continue
-            }
-
-            // serialize
-            const m = serialize(message)
-            const q = m.q
-            const mPrint = consoleMessage(m, q)
-
-            // event
-            //console.log('babarbabr', m)
-            // deteksi view once
-            // const viewOnce = m?.message?.[m.type]?.viewOnce
-            // if (viewOnce) {
-            //   //await sock.sendMessage(m.chatId, {text: 'view once.. restore ah'}, {quoted: m})
-            //   m.message[m.type].viewOnce = false
-            //   await sock.sendMessage(m.chatId, { forward: m, contextInfo: { isForwarded: false } }, { quoted: m })
-            //   continue
-            // }
-
-            if (v.permission === Permission.NOT_ALLOWED) {
-
-              console.log(`[not allowed] [save db]\n` + mPrint)
-              continue
-            }
-
-            if (!m.text) {
-
-              console.log(`[empty text] [save db]\n` + mPrint)
-              continue
-            }
-
-            //if (m.key.fromMe) continue
-
-            let handler = null
-            let command = null
-            try {
-
-              const { valid, prefix } = prefixManager.isMatchPrefix(m.text)
-              const textNoPrefix = prefix ? m.text.slice(prefix.length).trim() : m.text.trim()
-              command = textNoPrefix.split(/\s+/g)?.[0]
-
-              handler = pluginManager.plugins.get(command)
-              if (handler) {
-                if (valid || handler.config?.bypassPrefix) {
-                  const jid = m.key.remoteJid
-                  const text = textNoPrefix.slice(command.length + 1) // command text => |text|
-                  console.log(text)
-                  if (text === '-h') {
-                    await sendText(m.chatId, pluginHelpSerialize(handler))
-                  } else {
-                    await handler({ sock, jid, text, m, q, prefix, command });
-                  }
-                }
-
-              }
-
-            } catch (e) {
-              console.error(e.stack)
-              const errorLine = getErrorLine(e.stack) || 'gak tauu..'
-              const print = `🤯 *plugin fail*\n✏️ used command: ${command}\n📄 dir: ${fileURLToPath(handler.dir).replace(allPath.root, '').replaceAll('\\', '/')}\n🐞 line: ${errorLine}\n✉️ error message:\n${e.message}`
-              //await react(m, '🥲')
-              await sendText(m.chatId, print, m)
-              continue
-            }
-
-
-            console.log(`[lookup command] [save db]\n` + mPrint)
-            continue
-
-
-          } catch (e) {
-            console.error(e);
-            console.log(JSON.stringify(message, null, 2));
-          }
-        }
-      }
-
-      // APPEND
-      else {
-        for (let i = 0; i < messages.length; i++) {
-          const message = messages[i];
-          try {
-            // empty message
-            if (!message.message) {
-              console.log("[append] empty message");
-              continue
-            }
-
-            // protocol message
-            else if (message.message?.protocolMessage) {
-              const type = message.message?.protocolMessage?.type
-
-              // protocol delete
-              if (type === 0) {
-                console.log(`[append] protocol hapus, di hapus oleh ${message.pushName}`)
-                continue
-              }
-
-              // protocol edit
-              else if (type === 14) {
-                console.log('[append] protocol edit todo')
-                continue
-              }
-
-              // fallback for future notifi protocol handling
-              console.log("[append] protocol unhandle");
-              continue
-            }
-
-            // no pushname message
-            else if (!message?.pushName) {
-              console.log("[append] pesan tanpa pushname");
-              continue
-            }
-
-            // actual notification message
-
-            // filter jid, blocked
-            const v = userManager.isAuth(message.key)
-            if (v.permission === Permission.BLOCKED) {
-              console.log('[append] ' + v.message, userManager.blockedJids.get(v.jid) + ' at ' + (store.groupMetadata.get(message.key?.remoteJid)?.subject || message.key.remoteJid) + '\n')
-              continue
-            }
-
-            // serialize
-            const m = serialize(message)
-            const q = m.q
-            const mPrint = consoleMessage(m, q)
-
-            if (v.permission === Permission.NOT_ALLOWED) {
-
-              console.log(`[append] [not allowed] [save db]\n` + mPrint)
-              continue
-            }
-
-            if (!m.text) {
-
-              console.log(`[append] [empty text] [save db]\n` + mPrint)
-              continue
-            }
-
-            //if (m.key.fromMe) continue
-
-            console.log(`[append] [lookup command] [save db]\n` + mPrint)
-            continue
-
-
-          } catch (e) {
-            console.error(e);
-            console.log(JSON.stringify(message, null, 2));
-          }
-        }
-      }
-
+    if(ev['presence.update']){
+      await presenceUpdate(sock, ev['presence.update'])
     }
 
 
@@ -587,7 +396,7 @@ const startSock = async function (opts = {}) {
 
 }
 
-export { pluginManager, bot, store, sock, prefixManager, userManager }
+export { pluginManager, prefixManager, userManager, store, bot }
 
 
 

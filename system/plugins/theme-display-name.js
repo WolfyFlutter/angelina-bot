@@ -11,11 +11,11 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
     if (!textOnlyMessage(m)) return
     if (q) return
 
-    if (!text?.trim()) return await sendText(jid, `mana namanya wok`, m)
-    const pc = `${prefix || ''}${command || ''}`
-    if (text && text.trim() === 'get') return await sendText(jid, `${pc} ${botInfo.dn}`)
+    if (!text?.trim()) return await sendText(sock, jid, `mana namanya wok`, m)
+    const pc = `${prefix || ''}${command}`
+    if (text && text.trim() === 'get') return await sendText(sock, jid, `${pc} ${botInfo.dn}`)
     updateDisplayName(text)
-    await sendText(jid, `display name updated! coba ketik menu`)
+    await sendText(sock, jid, `display name updated! coba ketik menu`)
     return
 }
 
@@ -25,7 +25,7 @@ handler.description = 'command ini buat ngatur display name...\n' +
     'dn angelina (buat set display name)\n' +
     'dn get (buat dapetin current display name)'
 handler.command = ['dn']
-handler.category = ['set']
+handler.category = ['theme']
 
 handler.config = {
     systemPlugin: true,

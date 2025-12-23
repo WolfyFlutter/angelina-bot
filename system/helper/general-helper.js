@@ -57,3 +57,52 @@ export function extractUrl(string) {
 
     return urls
 }
+
+export function msToReadableTime(ms) {
+
+    if (isNaN(parseInt(ms))) return 'invalid ms value'
+
+    let d = 0, h = 0, m = 0, s = 0
+    const satuHari = 1000 * 60 * 60 * 24
+    const satuJam = 1000 * 60 * 60
+    const satuMenit = 1000 * 60
+    const satuDetik = 1000
+
+    while (ms >= satuHari) {
+        d++
+        ms -= satuHari
+    }
+    while (ms >= satuJam) {
+        h++
+        ms -= satuJam
+    }
+    while (ms >= satuMenit) {
+        m++
+        ms -= satuMenit
+    }
+    while (ms >= satuDetik) {
+        s++
+        ms -= satuDetik
+    }
+    d = d ? d + ' hari ' : ''
+    h = h ? h + ' jam ' : ''
+    m = m ? m + ' menit ' : ''
+    s = s ? s + ' detik ' : ''
+    let result = d + h + m + s
+    if (!result) result = '< 1 detik'
+    return result.trim()
+}
+
+export function formatByte(bytes, decimals = 2) {
+    if (bytes === 0) return '0 B';
+    if (!Number.isFinite(bytes)) return 'Invalid';
+
+    const k = 1024; // dasar binary
+    const dm = decimals < 0 ? 0 : decimals;
+
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB'];
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}

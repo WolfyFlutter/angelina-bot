@@ -11,12 +11,12 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
     if (!textOnlyMessage(m)) return
     if(q) return
 
-    const pc = `${prefix||''}${command||''}`
+    const pc = `${prefix||''}${command}`
 
-    if (!text?.trim()) return await sendText(jid, `mana namanya wok`, m)
-    if (text && text.trim() === 'get') return await sendText(jid, `${pc} ${botInfo.st}`)
+    if (!text?.trim()) return await sendText(sock, jid, `mana namanya wok`, m)
+    if (text && text.trim() === 'get') return await sendText(sock, jid, `${pc} ${botInfo.st}`)
     updateSecondaryText(text)
-    await sendText(jid, `secondary text updated! coba ketik menu`)
+    await sendText(sock, jid, `secondary text updated! coba ketik menu`)
     return
 }
 
@@ -26,7 +26,7 @@ handler.description = 'command ini buat ngatur secondary text...\n' +
     'st angelina (buat set display name)\n' +
     'st get (buat dapetin current display name)'
 handler.command = ['st']
-handler.category = ['set']
+handler.category = ['theme']
 
 handler.config = {
     systemPlugin: true,

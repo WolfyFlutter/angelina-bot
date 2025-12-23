@@ -1,6 +1,6 @@
 
-import { store, bot } from '../index.js'
 import { getContentType, normalizeMessageContent } from 'baileys'
+import { store, bot } from './helper.js'
 
 export default function (webMessagInfo) {
     //let m = structuredClone(mOri)
@@ -106,6 +106,6 @@ export default function (webMessagInfo) {
         },
         enumerable: true
     })
-    
+
     return result
 }
