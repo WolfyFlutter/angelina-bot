@@ -85,4 +85,4 @@ export default handler
 
 IMPORTANT
 
-dah support terminal, kalau mau coba langsung aja npm test, tapi sebelum itu edit dulu file user/data/trusted-jids.json tambahin lid mu disana biar jadi owner
+dah support terminal, kalau mau coba langsung aja npm start, tapi sebelum itu edit dulu file user/data/trusted-jids.json tambahin lid mu disana biar jadi owner
