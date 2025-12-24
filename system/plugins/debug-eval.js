@@ -17,19 +17,20 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
     // return return hm
     if (!userManager.trustedJids.has(m.senderId)) return
     try {
-        let result = await eval(`(async () => { ${text} })()`)
+        let result = await eval(`${text}`)
         if (typeof (result) !== 'string') result = util.inspect(result)
         return await sendText(sock, jid, result, mese)
     } catch (e) {
         console.log(e)
         return await sendText(sock, jid, e.message, mese)
+
     }
 }
 
-handler.pluginName = 'eval async'
-handler.description = 'eval yang udah di bungkus oleh async function.. kalian bisa langsung pakai keyword await.. tapi inget return ya.. atau nanti hasil akan undefined'
-handler.command = ['!!']
-handler.category = ['misc']
+handler.pluginName = 'eval'
+handler.description = 'eval biasa.. cuma kalau return nya promise otomatis di await. be careful'
+handler.command = ['!']
+handler.category = ['debug']
 
 handler.config = {
     systemPlugin: true,
@@ -38,10 +39,10 @@ handler.config = {
 }
 
 handler.meta = {
-    fileName: 'bot-eval-async.js',
+    fileName: 'bot-eval.js',
     version: '1',
     author: botInfo.an,
-    note: 'pal pale pale',
+    note: 'debag debug',
 }
 
 export default handler

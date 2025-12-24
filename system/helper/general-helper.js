@@ -1,15 +1,5 @@
 import fs from 'node:fs'
 
-export function vString(inputString, paramName = "param") {
-    if (typeof (inputString) !== 'string' || !inputString.trim()) {
-        throw Error(`${paramName} harus string dan gak boleh kosong.`)
-    }
-}
-
-export function getErrorLine(errorStack) {
-    return errorStack.match(/t=\d+:(\d+):/)?.[1]
-}
-
 export async function safeRun(fn, ...params) {
     try {
         const result = await fn(...params)
@@ -28,6 +18,16 @@ export function safeRunSync(fn, ...params) {
         console.error('[safeRunSync]', error)
         return { ok: false, data: error.message }
     }
+}
+
+export function vString(inputString, paramName = "param") {
+    if (typeof (inputString) !== 'string' || !inputString.trim()) {
+        throw Error(`${paramName} harus string dan gak boleh kosong.`)
+    }
+}
+
+export function getErrorLine(errorStack) {
+    return errorStack.match(/t=\d+:(\d+):/)?.[1]
 }
 
 export function pickRandom(array) {
@@ -106,3 +106,9 @@ export function formatByte(bytes, decimals = 2) {
 
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
+
+export function getParam (text){
+    return text.match(/\S+/g)
+}
+
+

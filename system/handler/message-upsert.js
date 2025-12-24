@@ -1,5 +1,5 @@
 // local import
-import { getErrorLine, sendText, pluginHelpSerialize, userManager, prefixManager, pluginManager, store, bot, tag  } from '../helper.js'
+import { getErrorLine, sendText, pluginHelpSerialize, userManager, prefixManager, pluginManager, store, bot, tag } from '../helper.js'
 import serialize from "../serialize.js";
 import consoleMessage from '../console-message.js';
 import { Permission } from '../manager-user.js'
@@ -82,18 +82,33 @@ export default async function messageUpsertHandler(sock, bem) {
                 }
 
                 // [SERIALIZE]
+                console.time('serialize')
                 const m = serialize(IMessage)
+                console.timeEnd('serialize')
+
                 const q = m.q
                 const mPrint = consoleMessage(m, q, store)
 
                 // [PUT YOUR ADDITIONAL MIDDLEWARE HERE (IF ANY)]
-
+                console.time('midware')
                 // IN GROUP
                 if (isJidGroup(m.chatId)) {
-                    // BOT LOCK / UNLOCK 
+
+                    // AUTO RESTORE READ VIEW ONCE
+                    const viewOnce = m?.message?.[m.type]?.viewOnce
                     const mentionedJid = m.message?.[m.type]?.contextInfo?.mentionedJid
                     const botMentioned = mentionedJid?.some(lid => lid === bot.lid)
-                    if (/^lock/.test(m.text)) {
+
+
+                    if (viewOnce) {
+                        //await sock.sendMessage(m.chatId, {text: 'view once.. restore ah'}, {quoted: m})
+                        m.message[m.type].viewOnce = false
+                        await sock.sendMessage(m.chatId, { forward: m, contextInfo: { isForwarded: false } }, { quoted: m })
+                        continue
+                    }
+                    // BOT LOCK / UNLOCK 
+                    
+                    else if (/^lock/.test(m.text)) {
                         if (!userManager.trustedJids.has(m.senderId)) continue
                         if (!botMentioned) continue
                         if (global.botLock) continue
@@ -120,6 +135,7 @@ export default async function messageUpsertHandler(sock, bem) {
                         for (const jid of mentionedJid) {
                             if (global?.afk?.[jid]) {
                                 await sendText(sock, m.chatId, `lagi afk dia.. katanya lagi ${global.afk[jid].reason}`, m)
+                                global.afk[jid].IMessage.push(m)
                                 continue
                             }
                         }
@@ -151,7 +167,7 @@ export default async function messageUpsertHandler(sock, bem) {
                         continue
                     }
                 }
-
+                console.timeEnd('midware')
                 // [END OF PUT YOUR ADDITIONAL MIDDLEWARE HERE IF ANY]
 
 
@@ -172,11 +188,18 @@ export default async function messageUpsertHandler(sock, bem) {
                 let command = null
                 try {
 
+                    console.time('prefix_check_and_text_parser')
                     const { valid, prefix } = prefixManager.isMatchPrefix(m.text)
                     const textNoPrefix = prefix ? m.text.slice(prefix.length).trim() : m.text.trim()
                     command = textNoPrefix.split(/\s+/g)?.[0]
 
+                    console.timeEnd('prefix_check_and_text_parser')
+
+                    console.time('plugin_lookup')
                     handler = pluginManager.plugins.get(command)
+                    console.timeEnd('plugin_lookup')
+
+
                     if (handler && !global.botLock) {
                         if (valid || handler.config?.bypassPrefix) {
                             const jid = m.key.remoteJid
@@ -185,7 +208,9 @@ export default async function messageUpsertHandler(sock, bem) {
                             if (text === '-h') {
                                 await sendText(sock, m.chatId, pluginHelpSerialize(handler))
                             } else {
+
                                 await handler({ sock, jid, text, m, q, prefix, command });
+
                             }
                         }
 
@@ -208,7 +233,9 @@ export default async function messageUpsertHandler(sock, bem) {
             } catch (e) {
                 console.error(e);
                 console.log(JSON.stringify(IMessage, null, 2));
+            } finally {
             }
+
         }
     }
 

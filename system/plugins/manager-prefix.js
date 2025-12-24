@@ -36,7 +36,7 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
                 if (!param[1]) return await sendText(sock, jid, `mana prefix barunya?\n\n${footer}`)
                 const found = pluginManager.plugins.get(param[1])
                 const isYourNewPrefixIsConfct = found?.config?.systemPlugin
-                if (isYourNewPrefixIsConfct) return await sendText(jid, `prefix itu gak bisa di pakai. karena udah di pakai oleh plugin *${found.pluginName}*\n\n${footer}`)
+                if (isYourNewPrefixIsConfct) return await sendText(sock, jid, `prefix itu gak bisa di pakai. karena udah di pakai oleh plugin *${found.pluginName}*\n\n${footer}`)
                 const add = prefixManager.add(param[1])
                 return await sendText(sock, jid, add ? '✅ berhasil menambah *' + param[1] + '* ke dalam prefix list' : '🔔 prefix `' + param[1] + '` sudah ada.')
 

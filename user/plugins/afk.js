@@ -10,7 +10,8 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
     if(!global.afk) global.afk = {}
     global.afk[m.senderId] = {
         time: Date.now(),
-        reason: text
+        reason: text,
+        IMessage: []
     }
     return await sendText(sock, jid, `${tag(m.senderId)} afk dengan alasann ${text}`)
 }

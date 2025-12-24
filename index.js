@@ -8,11 +8,11 @@ import makeWASocket, {
   delay,
   isJidGroup,
   areJidsSameUser,
+  Browsers,
 } from "baileys";
 import P from 'pino'
 import NodeCache from '@cacheable/node-cache';
 import qrTerminal from 'qrcode-terminal'
-
 
 // node js import
 import readline from 'node:readline'
@@ -21,24 +21,28 @@ import path from 'node:path'
 
 // local import
 import { safeRun } from './system/helper.js'
-
 import allPath from "./system/all-path.js";
 import patchMessageBeforeSending from "./system/patch-message-before-send.js";
 import UserManager from './system/manager-user.js'
 import PrefixManager from './system/manager-prefix.js'
 import PluginManager from './system/manager-plugin.js'
 
-// handler
+// handler import
 import messageReaction from "./belajar-handler/message-reaction.js";
 import messageUpsertHandler from "./system/handler/message-upsert.js";
 import presenceUpdate from "./system/handler/presence-update.js";
 
+// object create
 const msgRetryCounterCache = new NodeCache();
 const userManager = new UserManager();
+const prefixManager = new PrefixManager()
+const pluginManager = new PluginManager()
 
-let sock //= makeWASocket({})
+// object create store
 const groupMetadata = new Map()
 const contacts = new Map()
+
+let sock //= makeWASocket({})
 
 const bot = {
   pn: null,
@@ -62,27 +66,6 @@ const consoleStream = {
   }
 }
 const logger = P({ level: "error" })
-
-
-
-// fungsi titip
-// const updateChats = (jid, partialUpdate) => {
-//   log('chat update', partialUpdate)
-
-//   // checking file exist or no
-//   const filePath = allPath.storeChatsPath + '/' + jid + '.json'
-//   const exist = fs.existsSync(filePath)
-
-//   if (!exist) { // if file is not exist. create new one save to ram and file
-//     saveJson(partialUpdate, filePath)
-//     this.chats.set(jid, partialUpdate)
-//   } else { // if file exist, just update data in memory and save to file
-//     const currentData = this.chats.get(jid)
-//     const updatedJson = Object.assign(currentData, partialUpdate)
-//     this.chats.set(jid, updatedJson)
-//     saveJson(updatedJson, filePath)
-//   }
-// }
 
 const getGroupMetadata = async (jid) => {
 
@@ -116,16 +99,15 @@ const store = {
 
 
 
-const prefixManager = new PrefixManager()
-const pluginManager = new PluginManager()
 
-// #GLOBAL VARIABLE
-global.user = userManager
-global.bot = bot;
-global.store = store;
-global.pm = pluginManager
-global.fs = fs
-global.msgRetryCounterCache = msgRetryCounterCache
+
+// #GLOBAL VARIABLE NANTI DI HAPUS, INI UNTUK DEBUGINGS
+// global.user = userManager
+// global.bot = bot;
+// global.store = store;
+// global.pm = pluginManager
+// global.fs = fs
+// global.msgRetryCounterCache = msgRetryCounterCache
 
 const { saveCreds, state } = await useMultiFileAuthState(allPath.baileysAuth);
 const { version } = await fetchLatestWaWebVersion()
@@ -147,6 +129,7 @@ const startSock = async function (opts = {}) {
       /** caching makes the store faster to send/recv messages */
       keys: makeCacheableSignalKeyStore(state.keys, logger),
     },
+    browser: Browsers.android('13'),
     msgRetryCounterCache,
     cachedGroupMetadata: store.getGroupMetadata,
     logger,
@@ -397,6 +380,8 @@ const startSock = async function (opts = {}) {
 }
 
 export { pluginManager, prefixManager, userManager, store, bot }
+
+
 
 
 
