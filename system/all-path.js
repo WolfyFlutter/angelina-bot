@@ -5,9 +5,15 @@ const chatListenMode = path.join(import.meta.dirname, '../user/data/chat-listen-
 const groupWhitelist = path.join(import.meta.dirname, '../user/data/group-whitelist.json')
 const prefix = path.join(import.meta.dirname, '../user/data/prefix.json')
 const trustedJids = path.join(import.meta.dirname, '../user/data/trusted-jids.json')
-const baileysAuth = path.join(import.meta.dirname, '../auth')
 const botInfo = path.join(import.meta.dirname, '../user/data/bot-info.json')
-const root = path.join(import.meta.dirname,'../')
+
+
+const baileysAuth = path.join(import.meta.dirname, '../auth')
+const temp = path.join(import.meta.dirname, '../user/temp')
+const root = path.join(import.meta.dirname, '../')
+
+const systemPlugins = path.join(import.meta.dirname, './plugins')
+const userPlugins = path.join(import.meta.dirname, '../user/plugins')
 
 const allPath = {
     blockedJids,
@@ -17,7 +23,10 @@ const allPath = {
     trustedJids,
     baileysAuth,
     botInfo,
-    root
+    root,
+    temp,
+    systemPlugins,
+    userPlugins
 }
 
-export default allPath
+export { allPath }

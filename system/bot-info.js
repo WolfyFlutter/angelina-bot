@@ -1,5 +1,4 @@
-import allPath from './all-path.js'
-import { loadJson, saveJson } from './helper.js'
+import { loadJson, saveJson, allPath } from './helper.js'
 
 const json = loadJson(allPath.botInfo)
 

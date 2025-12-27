@@ -1,4 +1,4 @@
-import { botInfo, textOnlyMessage , formatByte, sendText, msToReadableTime} from '../helper.js'
+import { botInfo, textOnlyMessage, formatByte, sendText, msToReadableTime } from '../helper.js'
 
 /**
  * @param {import('../types/plugin.js').HandlerParams} params
@@ -9,8 +9,10 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
     if (q) return
     if (!textOnlyMessage(m)) return
 
-    const print = msToReadableTime(process.uptime()*1000)
-    await sendText(sock, jid, `on selama : ${print}`, m)
+    process.send({
+        type: 'uptime',
+        data: { jid }
+    })
     return
 }
 

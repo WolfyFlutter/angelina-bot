@@ -8,7 +8,8 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
 
     if (!text) return await sendText(sock,jid, 'isikan alasan', m )
     if(!global.afk) global.afk = {}
-    global.afk[m.senderId] = {
+    if(!global.afk[m.chatId]) global.afk[m.chatId] = {}
+    global.afk[m.chatId][m.senderId] = {
         time: Date.now(),
         reason: text,
         IMessage: []

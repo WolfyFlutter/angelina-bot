@@ -20,8 +20,8 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 // local import
-import { safeRun } from './system/helper.js'
-import allPath from "./system/all-path.js";
+import * as wawa from '#helper'
+import { safeRun, allPath, msToReadableTime, sendText } from './system/helper.js'
 import patchMessageBeforeSending from "./system/patch-message-before-send.js";
 import UserManager from './system/manager-user.js'
 import PrefixManager from './system/manager-prefix.js'
@@ -48,6 +48,7 @@ const bot = {
   pn: null,
   lid: null,
   pushname: null,
+  log: false
 };
 
 let gotCode = false;
@@ -102,12 +103,14 @@ const store = {
 
 
 // #GLOBAL VARIABLE NANTI DI HAPUS, INI UNTUK DEBUGINGS
-// global.user = userManager
-// global.bot = bot;
-// global.store = store;
-// global.pm = pluginManager
-// global.fs = fs
-// global.msgRetryCounterCache = msgRetryCounterCache
+global.prefix = prefixManager
+global.user = userManager
+global.bot = bot;
+global.store = store;
+global.pm = pluginManager
+global.fs = fs
+global.msgRetryCounterCache = msgRetryCounterCache
+global.helper = wawa
 
 const { saveCreds, state } = await useMultiFileAuthState(allPath.baileysAuth);
 const { version } = await fetchLatestWaWebVersion()
@@ -142,12 +145,12 @@ const startSock = async function (opts = {}) {
   });
 
   sock.ev.process(async (ev) => {
-    // if (ev['presence.update'] || ev['message-receipt.update']) {
-    //   console.log(ev)
+    if (ev['presence.update'] || ev['message-receipt.update']) {
+      // console.log(ev)
 
-    // } else {
-    //   //console.log(ev)
-    // }
+    } else {
+      if(bot.log) console.log(ev)
+    }
 
     // console.log(ev)
 
@@ -365,7 +368,7 @@ const startSock = async function (opts = {}) {
       await messageReaction(sock, ev['messages.reaction'])
     }
 
-    if(ev['presence.update']){
+    if (ev['presence.update']) {
       await presenceUpdate(sock, ev['presence.update'])
     }
 
@@ -379,7 +382,17 @@ const startSock = async function (opts = {}) {
 
 }
 
+process.on('message', async (message) => {
+  if (message.type === 'uptime') {
+    const print = msToReadableTime(message.data.uptime * 1000)
+    const jid = message.data.jid
+    await sendText(sock, jid, print)
+  }
+})
+
 export { pluginManager, prefixManager, userManager, store, bot }
+
+
 
 
 

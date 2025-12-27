@@ -1,9 +1,8 @@
 // local import
-import { getErrorLine, sendText, pluginHelpSerialize, userManager, prefixManager, pluginManager, store, bot, tag } from '../helper.js'
+import { getErrorLine, sendText, pluginHelpSerialize, userManager, prefixManager, pluginManager, store, bot, allPath } from '../helper.js'
 import serialize from "../serialize.js";
 import consoleMessage from '../console-message.js';
 import { Permission } from '../manager-user.js'
-import allPath from '../all-path.js';
 
 // node import
 import { fileURLToPath } from "node:url";
@@ -82,15 +81,12 @@ export default async function messageUpsertHandler(sock, bem) {
                 }
 
                 // [SERIALIZE]
-                console.time('serialize')
                 const m = serialize(IMessage)
-                console.timeEnd('serialize')
 
                 const q = m.q
                 const mPrint = consoleMessage(m, q, store)
 
                 // [PUT YOUR ADDITIONAL MIDDLEWARE HERE (IF ANY)]
-                console.time('midware')
                 // IN GROUP
                 if (isJidGroup(m.chatId)) {
 
@@ -167,7 +163,6 @@ export default async function messageUpsertHandler(sock, bem) {
                         continue
                     }
                 }
-                console.timeEnd('midware')
                 // [END OF PUT YOUR ADDITIONAL MIDDLEWARE HERE IF ANY]
 
 
@@ -188,16 +183,12 @@ export default async function messageUpsertHandler(sock, bem) {
                 let command = null
                 try {
 
-                    console.time('prefix_check_and_text_parser')
                     const { valid, prefix } = prefixManager.isMatchPrefix(m.text)
                     const textNoPrefix = prefix ? m.text.slice(prefix.length).trim() : m.text.trim()
                     command = textNoPrefix.split(/\s+/g)?.[0]
 
-                    console.timeEnd('prefix_check_and_text_parser')
 
-                    console.time('plugin_lookup')
                     handler = pluginManager.plugins.get(command)
-                    console.timeEnd('plugin_lookup')
 
 
                     if (handler && !global.botLock) {

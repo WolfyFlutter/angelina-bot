@@ -1,6 +1,5 @@
 import { fileURLToPath } from 'node:url'
-import allPath from "../all-path.js"
-import { botInfo as b } from '../helper.js'
+import { botInfo as b,allPath } from '../helper.js'
 
 export function pluginHelpSerialize(handler) {
     const emptyPlaceholder = '(tidak ada)'

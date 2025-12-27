@@ -3,7 +3,7 @@ import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 
 import { botInfo } from './bot-info.js'
-import { prefixManager } from './helper.js'
+import { prefixManager, allPath } from './helper.js'
 
 export default class PluginManager {
     categoryArray = []
@@ -28,11 +28,11 @@ export default class PluginManager {
         const pa = Array.from(this.plugins)
 
         // prefix command (for random display bottom help)
-        pa.forEach((p,i,plug) => {
+        pa.forEach((p, i, plug) => {
             const catArr = p[1].category
             catArr.forEach(cat => {
                 if (!this.mapCatWithCmdArray.get(cat)) this.mapCatWithCmdArray.set(cat, [])
-                this.mapCatWithCmdArray.get(cat).push({cmd: p[0], plugin: plug[i]})
+                this.mapCatWithCmdArray.get(cat).push({ cmd: p[0], plugin: plug[i] })
             })
 
         })
@@ -50,7 +50,7 @@ export default class PluginManager {
             .map(v => [v[0], `${botInfo.b1f}${v[0]}${botInfo.b1b}\n${v[1]
                 .map(obj => {
                     const p = obj.plugin[1].config?.bypassPrefix ? '' :
-                    prefix.isEnable ? prefix.prefixList[0] : ''
+                        prefix.isEnable ? prefix.prefixList[0] : ''
                     return `${botInfo.b2f}${p}${obj.cmd}  _${obj.plugin[1].pluginName}_${botInfo.b2b}`
                 }).sort()
                 .join('\n')}`])
@@ -67,8 +67,8 @@ export default class PluginManager {
 
         // plugin path
         const allPluginPath = [
-            path.join(cd, 'plugins'), //system plugin
-            path.join(cd, '../user/plugins'), //your plugin
+            path.join(allPath.systemPlugins), //system plugin
+            path.join(allPath.userPlugins), //your plugin
         ]
         for (let i = 0; i < allPluginPath.length; i++) {
             await this.processAllPluginsFromDir(allPluginPath[i])
