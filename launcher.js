@@ -4,7 +4,7 @@ let a = async function () {
     let run = function () {
         return new Promise((resolve, reject) => {
             const child = fork('./index.js', [], {
-                execArgv: ['--expose-gc', '--inspect']
+                execArgv: ['--expose-gc']
             });
 
 
