@@ -436,12 +436,13 @@ if (!credsExist.ok) {
     startSock({ qr: true })
   } else if (userLoginMethod === loginMethod[2]) {
     console.log('waduh knp tuh kira kira')
+    process.exitCode = 0
+    process.exit()
   }
 
   rl.close()
   console.log('readline closed')
-  process.exitCode = 0
-  process.exit()
+
 
 } else {
   console.log('start bot as usual')
