@@ -1,5 +1,5 @@
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import { sendText, botInfo, userManager, getParam, tag, pluginManager, allPath, safeRun, safeRunSync, prefixManager } from '../helper.js'
+import { sendText, botInfo, userManager, getParam, tag, pluginManager, allPath, safeRun, safeRunSync, prefixManager, writeFileSafe, writeFileStreamSafe } from '../helper.js'
 import mime from 'mime-types'
 
 import fs from 'node:fs'
@@ -91,11 +91,10 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
 
             if (hasLegitDocument) {
                 // save sementara
-                const writeStream = fs.createWriteStream(filePath)
                 const mediaStream = await downloadMediaMessage(q, 'stream')
-                await promises.pipeline(mediaStream, writeStream)
+                await writeFileStreamSafe(mediaStream, filePath)
             } else {
-                await fs.promises.writeFile(filePath, q.text)
+                await writeFileSafe(filePath, q.text)
                 console.log('here', q.text)
             }
 

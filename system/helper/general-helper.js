@@ -1,4 +1,6 @@
 import fs from 'node:fs'
+import path from 'node:path'
+import { pipeline } from 'node:stream/promises'
 
 export async function safeRun(fn, ...params) {
     try {
@@ -107,8 +109,21 @@ export function formatByte(bytes, decimals = 2) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
-export function getParam (text){
+export function getParam(text) {
     return text.match(/\S+/g)
 }
 
+export async function writeFileSafe(dest, data) {
+    const dir = path.dirname(dest)
+    await fs.promises.mkdir(dir, { recursive: true })
+    await fs.promises.writeFile(dest, data)
+}
+
+
+export async function writeFileStreamSafe(sourceStream, destinationDir) {
+    const dir = path.dirname(destinationDir)
+    await fs.promises.mkdir(dir, { recursive: true })
+    const destinationStream = fs.createWriteStream(destinationDir)
+    await pipeline(sourceStream, destinationStream)
+}
 
