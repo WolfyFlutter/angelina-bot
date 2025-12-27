@@ -103,14 +103,14 @@ const store = {
 
 
 // #GLOBAL VARIABLE NANTI DI HAPUS, INI UNTUK DEBUGINGS
-global.prefix = prefixManager
-global.user = userManager
-global.bot = bot;
-global.store = store;
-global.pm = pluginManager
-global.fs = fs
-global.msgRetryCounterCache = msgRetryCounterCache
-global.helper = wawa
+// global.prefix = prefixManager
+// global.user = userManager
+// global.bot = bot;
+// global.store = store;
+// global.pm = pluginManager
+// global.fs = fs
+// global.msgRetryCounterCache = msgRetryCounterCache
+// global.helper = wawa
 
 const { saveCreds, state } = await useMultiFileAuthState(allPath.baileysAuth);
 const { version } = await fetchLatestWaWebVersion()
@@ -149,7 +149,7 @@ const startSock = async function (opts = {}) {
       // console.log(ev)
 
     } else {
-      if(bot.log) console.log(ev)
+      //if(bot.log) console.log(ev)
     }
 
     // console.log(ev)

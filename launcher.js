@@ -3,7 +3,7 @@ import { fork } from 'node:child_process';
 let run = function () {
     return new Promise((resolve, reject) => {
         const child = fork('./index.js', [], {
-            execArgv: ['--expose-gc', '--inspect=9229']
+            execArgv: ['--expose-gc']
         });
 
 

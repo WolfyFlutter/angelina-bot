@@ -12,7 +12,7 @@
   "main": "index.js",
   "scripts": {
     "test": "node --inspect --expose-gc index.js",
-    "start": "node --expose-gc index.js"
+    "start": "node launcher.js"
   },
   "keywords": [
     "baileys",
