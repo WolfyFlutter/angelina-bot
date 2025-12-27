@@ -28,16 +28,15 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
 handler.pluginName = 'shell'
 handler.description = 'shell'
 handler.command = ['$']
-handler.category = ['debug']
+handler.category = ['advanced']
 
 handler.config = {
     systemPlugin: true,
-    antiDelete: true,
     bypassPrefix: true,
 }
 
 handler.meta = {
-    fileName: 'bot-eval.js',
+    fileName: 'advanced-shell.js',
     version: '1',
     author: botInfo.an,
     note: 'debag debug',

@@ -62,18 +62,18 @@ handler.description = 'command ini buat nampiin menu.\n' +
     'menu <category>\n' +
     'menu all'
 handler.command = ['menu']
-handler.category = ['misc']
+handler.category = ['system']
 
 handler.config = {
     systemPlugin: true,
-    antiDelete: true,
+    preventDelete: true,
 }
 
 handler.meta = {
     fileName: 'menu.js',
     version: '1',
     author: botInfo.an,
-    note: 'awawawa solid solid solid',
+    note: 'gabut',
 }
 
 export default handler

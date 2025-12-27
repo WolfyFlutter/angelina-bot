@@ -1,11 +1,9 @@
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { sendText, botInfo, userManager, getParam, tag, pluginManager, allPath, safeRun, safeRunSync, prefixManager, writeFileSafe, writeFileStreamSafe } from '../helper.js'
-import mime from 'mime-types'
 
 import fs from 'node:fs'
 import path from 'node:path'
-import { downloadContentFromMessage, downloadMediaMessage } from 'baileys'
-import { promises } from 'node:stream'
+import { downloadMediaMessage } from 'baileys'
 /**
  * @param {import('../types/plugin.js').HandlerParams} params
  */
@@ -109,7 +107,7 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
                     global.module = module
                     global.pluginManager = pluginManager
                 } catch (e) {
-                    await fs.promises.rm(filePath)
+                    //await fs.promises.rm(filePath)
                     console.log(e)
                     return await sendText(sock, jid, `code error\n` + e.message, q)
                 }

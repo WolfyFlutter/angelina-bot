@@ -129,9 +129,9 @@ export default async function messageUpsertHandler(sock, bem) {
                         console.log('here', mentionedJid)
                         // afk
                         for (const jid of mentionedJid) {
-                            if (global?.afk?.[jid]) {
-                                await sendText(sock, m.chatId, `lagi afk dia.. katanya lagi ${global.afk[jid].reason}`, m)
-                                global.afk[jid].IMessage.push(m)
+                            if (global?.afk?.[m.chatId]?.[jid]) {
+                                await sendText(sock, m.chatId, `lagi afk dia.. katanya lagi ${global.afk[m.chatId][jid].reason}`, m)
+                                global.afk?.[m.chatId]?.[jid].IMessage.push(m)
                                 continue
                             }
                         }

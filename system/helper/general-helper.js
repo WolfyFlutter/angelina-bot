@@ -7,7 +7,7 @@ export async function safeRun(fn, ...params) {
         const result = await fn(...params)
         return { ok: true, data: result }
     } catch (error) {
-        console.error('[safeRun]', error)
+        console.error('[safeRun]', error.message)
         return { ok: false, data: error.message }
     }
 }
@@ -17,7 +17,7 @@ export function safeRunSync(fn, ...params) {
         const result = fn(...params)
         return { ok: true, data: result }
     } catch (error) {
-        console.error('[safeRunSync]', error)
+        console.error('[safeRunSync]', error.message)
         return { ok: false, data: error.message }
     }
 }

@@ -8,7 +8,6 @@ import makeWASocket, {
   delay,
   isJidGroup,
   areJidsSameUser,
-  Browsers,
 } from "baileys";
 import P from 'pino'
 import NodeCache from '@cacheable/node-cache';
@@ -48,7 +47,7 @@ const bot = {
   pn: null,
   lid: null,
   pushname: null,
-  log: false
+  log: true
 };
 
 let gotCode = false;
@@ -132,7 +131,6 @@ const startSock = async function (opts = {}) {
       /** caching makes the store faster to send/recv messages */
       keys: makeCacheableSignalKeyStore(state.keys, logger),
     },
-    browser: Browsers.android('13'),
     msgRetryCounterCache,
     cachedGroupMetadata: store.getGroupMetadata,
     logger,
@@ -149,7 +147,7 @@ const startSock = async function (opts = {}) {
       // console.log(ev)
 
     } else {
-      //if(bot.log) console.log(ev)
+      if (bot.log) console.log(ev)
     }
 
     // console.log(ev)
@@ -175,6 +173,9 @@ const startSock = async function (opts = {}) {
             console.log(
               "logout by user or uncompleted pairing. auth folder deleted. program stopped (please wait)",
             );
+
+            process.exitCode = 1000
+            process.exit()
 
           }
         } else {
@@ -377,8 +378,8 @@ const startSock = async function (opts = {}) {
 
   });
 
-  if (global.sock) delete global.sock
-  global.sock = sock
+  // if (global.sock) delete global.sock
+  // global.sock = sock
 
 }
 
@@ -439,6 +440,8 @@ if (!credsExist.ok) {
 
   rl.close()
   console.log('readline closed')
+  process.exitCode = 0
+  process.exit()
 
 } else {
   console.log('start bot as usual')

@@ -16,7 +16,7 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
     let gm
     if (groupMessage) {
         gm = store.groupMetadata.get(key.remoteJid)
-        if (!gm) return await sendText(jid, "store belum siap, coba lagi", m)
+        if (!gm) return await sendText(sock, jid, "store belum siap, coba lagi", m)
     }
 
     const rpn = async (hm, gm, mOri) => {
@@ -61,8 +61,8 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
     const p_device = `from : ${getDevice(key.id)}\n`
     const p_lid = `lid  : ${flip ? resolvePn : resolveLid}\n`
     const p_pn = `pn   : ${flip ? resolveLid : resolvePn}\n`
-    const p_chatId = `id   : ${key.remoteJid}\n`
-    const p_admin = `admin: ${ra(mese)}\n`
+    const p_chatId = `r jid: ${key.remoteJid}\n`
+    const p_admin =  `admin: ${ra(mese)}\n`
 
 
     const p_messageId = `id\n${key.id}\n\n`
@@ -78,7 +78,7 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
 
     const print =
         '👤 *account*\n' +
-        '```' + p_pushName + p_device + p_lid + p_pn + p_admin + '```\n' +
+        '```' + p_pushName + p_device + p_lid + p_pn + p_chatId + p_admin + '```\n' +
         '📝 *bot note*\n' +
         '```' + p_isTrusted + p_isBanned + p_indexMessage + '```\n' +
         '✉️ *message*\n' +
@@ -93,19 +93,18 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
 handler.pluginName = 'inspect message'
 handler.description = 'menu inspect message.. buat liat data data penting dari message.. cara pakai nya reply ke pesan lalu ketik command nya'
 handler.command = ['im']
-handler.category = ['debug']
+handler.category = ['advanced']
 
 handler.config = {
-    bypassPrefix: false,
+    bypassPrefix: true,
     systemPlugin: true,
-    preventDelete: true,
 }
 
 handler.meta = {
-    fileName: 'menu.js',
+    fileName: 'advanced-im.js',
     version: '1',
     author: botInfo.an,
-    note: 'awawawa solid solid solid',
+    note: 'kamu suka kepo',
 }
 
 export default handler

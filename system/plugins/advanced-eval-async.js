@@ -1,11 +1,15 @@
+// external import
+import * as b from 'baileys'
+
+// local import
 import { sendText, botInfo, userManager } from '../helper.js'
 import * as wa from '../helper.js'
 
+// node import
 import fs from 'node:fs'
 import crypto from 'node:crypto'
 import util from 'node:util'
 
-import * as b from 'baileys'
 
 /**
  * @param {import('../types/plugin.js').HandlerParams} params
@@ -27,18 +31,17 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
 }
 
 handler.pluginName = 'eval async'
-handler.description = 'eval yang udah di bungkus oleh async function.. kalian bisa langsung pakai keyword await.. tapi inget return ya.. atau nanti hasil akan undefined'
+handler.description = 'eval yang udah di bungkus oleh async function. kalian bisa langsung pakai keyword await, tapi inget return ya. atau nanti hasil akan undefined karena di bungkus di dalam function.'
 handler.command = ['!!']
-handler.category = ['debug']
+handler.category = ['advanced']
 
 handler.config = {
     systemPlugin: true,
-    antiDelete: true,
     bypassPrefix: true,
 }
 
 handler.meta = {
-    fileName: 'bot-eval-async.js',
+    fileName: 'advanced-eval-async.js',
     version: '1',
     author: botInfo.an,
     note: 'pal pale pale',
