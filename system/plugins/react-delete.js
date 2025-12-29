@@ -6,7 +6,7 @@ import { sendText, botInfo, tag, userManager, textOnlyMessage } from '../helper.
 
 async function handler({ sock, m, q, text, jid, command, prefix }) {
 
-    if (!user.trustedJids.has(m.senderId)) return
+    if (!userManager.trustedJids.has(m.senderId)) return
     if (m.type !== "reactionMessage") return
     const qmk = m.message.reactionMessage.key // qmk = quoted message key
     const botMessage = qmk.participant === bot.lid || qmk.remoteJid === m.senderId
