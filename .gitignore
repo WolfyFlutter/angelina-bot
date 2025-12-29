@@ -41,7 +41,7 @@ build/Release
 node_modules/
 jspm_packages/
 auth/
-user/
+user/data
 
 
 # Snowpack dependency directory (https://snowpack.dev/)

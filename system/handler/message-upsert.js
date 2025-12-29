@@ -33,7 +33,7 @@ export default async function messageUpsertHandler(sock, bem) {
 
                 // message stubtype
                 if (IWMI.messageStubType) {
-                    console.log('unhandle messageStubType', IWMI)
+                    console.log('unhandle messageStubType')
                     continue
                 }
 
@@ -54,19 +54,19 @@ export default async function messageUpsertHandler(sock, bem) {
                     }
 
                     // fallback for future notifi protocol handling
-                    console.log("[protocol] unhandle", IWMI);
+                    console.log("[protocol] unhandle");
                     continue
                 }
 
                 // empty message
                 if (!IWMI.message) {
-                    console.log("[empty message]", IWMI);
+                    console.log("[empty message]");
                     continue
                 }
 
                 // no pushname message
                 else if (!IWMI?.pushName) {
-                    console.log("[message without pushname]", IWMI);
+                    console.log("[message without pushname]");
                     continue
                 }
 
@@ -236,7 +236,7 @@ export default async function messageUpsertHandler(sock, bem) {
 
                 // message stubtype
                 if (IMessage.messageStubType) {
-                    console.log('[append] unhandle messageStubType', IMessage)
+                    console.log('[append] unhandle messageStubType')
                     continue
                 }
 
@@ -257,19 +257,19 @@ export default async function messageUpsertHandler(sock, bem) {
                     }
 
                     // fallback for future notifi protocol handling
-                    console.log("[append] unhandle protocolMessage", IMessage);
+                    console.log("[append] unhandle protocolMessage");
                     continue
                 }
 
                 // no pushname message
                 else if (!IMessage?.pushName) {
-                    console.log("[append] objek tanpa pushname", IMessage);
+                    console.log("[append] objek tanpa pushname");
                     continue
                 }
 
                 // empty message
                 if (!IMessage.message) {
-                    console.log("[append] objek tanpa message", IMessage);
+                    console.log("[append] objek tanpa message");
                     continue
                 }
 

@@ -28,7 +28,6 @@ import PrefixManager from './system/manager-prefix.js'
 import PluginManager from './system/manager-plugin.js'
 
 // handler import
-import messageReaction from "./belajar-handler/message-reaction.js";
 import messageUpsertHandler from "./system/handler/message-upsert.js";
 import presenceUpdate from "./system/handler/presence-update.js";
 
@@ -74,7 +73,7 @@ const getGroupMetadata = async (jid) => {
     if (!data) {
         try {
             const fresh = await sock.groupMetadata(jid)
-            console.log(`↗️ fetch group metadata: ${fresh.subject}`, fresh)
+            console.log(`↗️ fetch group metadata: ${fresh.subject}`)
             groupMetadata.set(jid, fresh)
             return fresh
         } catch (error) {
@@ -98,19 +97,15 @@ const store = {
 }
 
 
-
-
-
-
 // #GLOBAL VARIABLE NANTI DI HAPUS, INI UNTUK DEBUGINGS
-global.prefix = prefixManager
-global.user = userManager
-global.bot = bot;
-global.store = store;
-global.pm = pluginManager
-global.fs = fs
-global.msgRetryCounterCache = msgRetryCounterCache
-global.helper = wawa
+// global.prefix = prefixManager
+// global.user = userManager
+// global.bot = bot;
+// global.store = store;
+// global.pm = pluginManager
+// global.fs = fs
+// global.msgRetryCounterCache = msgRetryCounterCache
+// global.helper = wawa
 
 const { saveCreds, state } = await useMultiFileAuthState(allPath.baileysAuth);
 const { version } = await fetchLatestWaWebVersion()
@@ -141,12 +136,12 @@ const startSock = async function (opts = {}) {
     });
 
     sock.ev.process(async (ev) => {
-        if (ev['presence.update'] || ev['message-receipt.update'] || ev['creds.update'] || ev['connection.update']) {
-            // console.log(ev)
+        // if (ev['presence.update'] || ev['message-receipt.update'] || ev['creds.update'] || ev['connection.update']) {
+        //     // console.log(ev)
 
-        } else {
-            if (bot.log) console.log(ev)
-        }
+        // } else {
+        //     if (bot.log) console.log(ev)
+        // }
 
         // console.log(ev)
 
@@ -382,18 +377,14 @@ const startSock = async function (opts = {}) {
             await messageUpsertHandler(sock, ev['messages.upsert'])
         }
 
-        // handler
-        if (ev['messages.reaction']) {
-            await messageReaction(sock, ev['messages.reaction'])
-        }
 
         if (ev['presence.update']) {
             await presenceUpdate(sock, ev['presence.update'])
         }
     });
 
-    if (global.sock) delete global.sock
-    global.sock = sock
+    // if (global.sock) delete global.sock
+    // global.sock = sock
 }
 
 
