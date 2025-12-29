@@ -1,26 +1,19 @@
-GES SORRY BGT YAK BASE NYA BELUM JADI..
-TAPI KALAU MAU COBAIN BOLEH.. CUMA BELUM FINAL HEHE.. SELALU GW UPDATE KOK. DAN GW BIKIN CARA PAKAI NYA DAN FITUR NYA YG AWUWU
+fitur
+- bisa run di termux, panel, vps, rdp, laptop
+- chat manager (self / public / individual group / override setting)
+- user manager (bisa block user / tambah trusted user (owner)
+- prefix manager (hidupkan / matikan prefix / tambah prefix baru)
+- plugin manager (pasang plugin, hapus plugin)
+- isolated hot process (bisa restart bot kapanpun... cocok kalau konsumsi ram udh tinggi)
+- easy customize (ada banyak pilihan edit tampilan menu.. cek aja sendiri wkwk)
+- eval (buat yg suka main kode)
+- eval async (eval juga tapi di bungkus async function)
+- shell access
 
-TODO : 
-- ✅BIKIN PLUGIN MANAGER / PLUGIN STORE
+- small ram usage
+- fast and light weight
+- use node js terbaru ya!
 
-- BIKIN MEKANISME INIT OWNER PERTAMA KALI SELAIN CARA EDIT LID MANUAL
-
-- BIKIN STORE LABEL
-
-- BIKIN VIDEO / CARA INSTALL / PAKA FITUR BOT
-
-- ✅BIKIN PLUGIN EXAMPLE
-
-- ✅BIKIN ISOLATED PROCESS (LAUNCHER DAN MAIN PROCESS)
-
-
-
-
-TODO OPSIONAL
-
-
-- BIKIN THEME MANAGER / THEME STORE
 
 
 serialize message object
@@ -83,11 +76,6 @@ export default handler
 ```
 
 
-IMPORTANT
-
-dah support terminal, kalau mau coba langsung aja npm start, tapi sebelum itu edit dulu file user/data/trusted-jids.json tambahin lid mu disana biar jadi owner
-
-
 cara pakai
 
 
@@ -95,5 +83,7 @@ cara pakai
 git clone
 npm i
 npm start
+pilih qr apa pairing code
+lalu cepet" kirim pesan ke bot dengan command request_owner (buat jadi owner pertama) via private chat, bisa juga di pakai self bot (diri sendiri jadi bot, kirim nya ke diri sendiri juga)
 enjoy
 ```
