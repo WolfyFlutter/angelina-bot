@@ -3,6 +3,7 @@
 
 fitur
 - bisa run di termux, panel, vps, rdp, laptop
+- store groupMetadata, pushname
 - chat manager (self / public / individual group / override setting)
 - user manager (bisa block user / tambah trusted user (owner)
 - prefix manager (hidupkan / matikan prefix / tambah prefix baru)
