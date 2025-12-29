@@ -1,3 +1,6 @@
+
+![Screenshot_2025-12-29-22-19-02-787-edit_com whatsapp](https://github.com/user-attachments/assets/97b8a530-3853-4024-b4d4-ebc1109eae4b)
+
 fitur
 - bisa run di termux, panel, vps, rdp, laptop
 - chat manager (self / public / individual group / override setting)
@@ -13,6 +16,13 @@ fitur
 - small ram usage
 - fast and light weight
 - use node js terbaru ya!
+
+![Screenshot_2025-12-29-22-24-44-775_com whatsapp](https://github.com/user-attachments/assets/bdf882fa-7695-4d07-8f14-6e1959c3e01b)
+
+small ram usage
+
+![IMG_20251229_221808](https://github.com/user-attachments/assets/a184f4de-1b85-4dae-89b9-64fcb0aacaf6)
+
 
 
 
