@@ -2,7 +2,7 @@ GES SORRY BGT YAK BASE NYA BELUM JADI..
 TAPI KALAU MAU COBAIN BOLEH.. CUMA BELUM FINAL HEHE.. SELALU GW UPDATE KOK. DAN GW BIKIN CARA PAKAI NYA DAN FITUR NYA YG AWUWU
 
 TODO : 
-- BIKIN PLUGIN MANAGER / PLUGIN STORE
+- ✅BIKIN PLUGIN MANAGER / PLUGIN STORE
 
 - BIKIN MEKANISME INIT OWNER PERTAMA KALI SELAIN CARA EDIT LID MANUAL
 
@@ -10,9 +10,9 @@ TODO :
 
 - BIKIN VIDEO / CARA INSTALL / PAKA FITUR BOT
 
-- BIKIN PLUGIN EXAMPLE
+- ✅BIKIN PLUGIN EXAMPLE
 
-- BIKIN ISOLATED PROCESS (LAUNCHER DAN MAIN PROCESS)
+- ✅BIKIN ISOLATED PROCESS (LAUNCHER DAN MAIN PROCESS)
 
 
 
@@ -86,3 +86,14 @@ export default handler
 IMPORTANT
 
 dah support terminal, kalau mau coba langsung aja npm start, tapi sebelum itu edit dulu file user/data/trusted-jids.json tambahin lid mu disana biar jadi owner
+
+
+cara pakai
+
+
+```
+git clone
+npm i
+npm start
+enjoy
+```
