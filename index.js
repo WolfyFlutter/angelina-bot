@@ -182,6 +182,16 @@ const startSock = async function (opts = {}) {
 
             else if (connection == "open") {
                 console.log("✅ terhubung ke whatsapp");
+
+                // read last restart messafe (if any)
+                const lastRestartMessage = path.join(allPath.tempFolder, 'message-restart.bin')
+                const result = await safeRunAsync(fs.promises.readFile, lastRestartMessage)
+                if (result.ok) {
+                    console.log('found last restart message.. sending.. iam reincarnation')
+                    const wm = proto.WebMessageInfo.decode(result.data)
+                    await sock.sendMessage(wm.key.remoteJid, { text: `hey i born again! with pid: ${process.pid}` }, { quoted: wm })
+                    await fs.promises.rm(lastRestartMessage)
+                }
             }
 
             else if (connection == "connecting") {
@@ -206,15 +216,7 @@ const startSock = async function (opts = {}) {
             else if (isOnline) {
                 console.log("🟢 online")
 
-                // read last restart messafe (if any)
-                const lastRestartMessage = path.join(allPath.tempFolder, 'message-restart.bin')
-                const result = await safeRunAsync(fs.promises.readFile, lastRestartMessage)
-                if (result.ok) {
-                    console.log('found last restart message.. sending.. iam reincarnation')
-                    const wm = proto.WebMessageInfo.decode(result.data)
-                    await sock.sendMessage(wm.key.remoteJid, { text: `hey i born again! with pid: ${process.pid}` }, { quoted: wm })
-                    await fs.promises.rm(lastRestartMessage)
-                }
+
             }
         }
 
