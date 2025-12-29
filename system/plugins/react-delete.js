@@ -1,4 +1,4 @@
-import { sendText, botInfo, tag, userManager, textOnlyMessage } from '../helper.js'
+import { botInfo, userManager, bot } from '../helper.js'
 
 /**
  * @param {import('../types/plugin.js').HandlerParams} params
