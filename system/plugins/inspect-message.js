@@ -61,7 +61,7 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
     const p_device = `from : ${getDevice(key.id)}\n`
     const p_lid = `lid  : ${flip ? resolvePn : resolveLid}\n`
     const p_pn = `pn   : ${flip ? resolveLid : resolvePn}\n`
-    const p_chatId = `r jid: ${key.remoteJid}\n`
+    const p_chatId = `jid  : ${key.remoteJid}\n`
     const p_admin =  `admin: ${ra(mese)}\n`
 
 
@@ -93,15 +93,14 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
 handler.pluginName = 'inspect message'
 handler.description = 'menu inspect message.. buat liat data data penting dari message.. cara pakai nya reply ke pesan lalu ketik command nya'
 handler.command = ['im']
-handler.category = ['advanced']
+handler.category = ['built-in']
 
 handler.config = {
-    bypassPrefix: true,
     systemPlugin: true,
 }
 
 handler.meta = {
-    fileName: 'advanced-im.js',
+    fileName: 'inspect-message.js',
     version: '1',
     author: botInfo.an,
     note: 'kamu suka kepo',

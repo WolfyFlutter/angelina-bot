@@ -7,23 +7,24 @@ import { Permission } from '../manager-user.js'
 // node import
 import { fileURLToPath } from "node:url";
 import { isJidGroup, isLidUser, isPnUser } from 'baileys';
+const lockText = 'bot locked 🔒'
+const unlockText = 'bot unlock 🔓✨\nlet\'s play!'
 
 /**
  * @param {import ('baileys').WASocket} sock
  * @param {import('baileys').BaileysEventMap['messages.upsert']} bem
  */
 
-const lockText = 'bot locked 🔒'
-const unlockText = 'bot unlock 🔓✨\nlet\'s play!'
+
 
 export default async function messageUpsertHandler(sock, bem) {
-
+        
     const { messages, type } = bem;
     // NOTIFY
     if (type === "notify") {
         // NOTIFY
         for (let i = 0; i < messages.length; i++) {
-            const IMessage = messages[i];
+            const IWMI = messages[i];
             try {
                 /*
                 gw gak ngerti konsep middleware T^T, anggap aja ini kek middleware
@@ -31,18 +32,18 @@ export default async function messageUpsertHandler(sock, bem) {
                 */
 
                 // message stubtype
-                if (IMessage.messageStubType) {
-                    console.log('unhandle messageStubType', IMessage)
+                if (IWMI.messageStubType) {
+                    console.log('unhandle messageStubType', IWMI)
                     continue
                 }
 
                 // protocol message
-                else if (IMessage.message?.protocolMessage) {
-                    const protocolType = IMessage.message?.protocolMessage?.type
+                else if (IWMI.message?.protocolMessage) {
+                    const protocolType = IWMI.message?.protocolMessage?.type
 
                     // protocol delete
                     if (protocolType === 0) {
-                        console.log(`[protocol] hapus, di hapus oleh ${IMessage.pushName}`)
+                        console.log(`[protocol] hapus, di hapus oleh ${IWMI.pushName}`)
                         continue
                     }
 
@@ -53,35 +54,35 @@ export default async function messageUpsertHandler(sock, bem) {
                     }
 
                     // fallback for future notifi protocol handling
-                    console.log("[protocol] unhandle", IMessage);
+                    console.log("[protocol] unhandle", IWMI);
                     continue
                 }
 
                 // empty message
-                if (!IMessage.message) {
-                    console.log("[empty message]", IMessage);
+                if (!IWMI.message) {
+                    console.log("[empty message]", IWMI);
                     continue
                 }
 
                 // no pushname message
-                else if (!IMessage?.pushName) {
-                    console.log("[message without pushname]", IMessage);
+                else if (!IWMI?.pushName) {
+                    console.log("[message without pushname]", IWMI);
                     continue
                 }
 
                 // actual notification message
 
                 // [READ USER PERMISSION]
-                const user = userManager.isAuth(IMessage.key)
+                const user = userManager.isAuth(IWMI.key)
 
                 // [BLOCKED JID] return
                 if (user.permission === Permission.BLOCKED) {
-                    console.log(user.message, userManager.blockedJids.get(user.jid) + ' at ' + (store.groupMetadata.get(IMessage.key?.remoteJid)?.subject || IMessage.key.remoteJid) + '\n')
+                    console.log(user.message, userManager.blockedJids.get(user.jid) + ' at ' + (store.groupMetadata.get(IWMI.key?.remoteJid)?.subject || IWMI.key.remoteJid) + '\n')
                     continue
                 }
 
                 // [SERIALIZE]
-                const m = serialize(IMessage)
+                const m = serialize(IWMI)
 
                 const q = m.q
                 const mPrint = consoleMessage(m, q, store)
@@ -195,13 +196,10 @@ export default async function messageUpsertHandler(sock, bem) {
                         if (valid || handler.config?.bypassPrefix) {
                             const jid = m.key.remoteJid
                             const text = textNoPrefix.slice(command.length + 1) // command text => |text|
-                            console.log(text)
                             if (text === '-h') {
                                 await sendText(sock, m.chatId, pluginHelpSerialize(handler))
                             } else {
-
-                                await handler({ sock, jid, text, m, q, prefix, command });
-
+                                await handler({ sock, jid, text, m, q, prefix, command, IWMI  });
                             }
                         }
 
@@ -223,7 +221,7 @@ export default async function messageUpsertHandler(sock, bem) {
 
             } catch (e) {
                 console.error(e);
-                console.log(JSON.stringify(IMessage, null, 2));
+                console.log(JSON.stringify(IWMI, null, 2));
             } finally {
             }
 

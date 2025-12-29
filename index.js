@@ -8,6 +8,7 @@ import makeWASocket, {
   delay,
   isJidGroup,
   areJidsSameUser,
+  proto,
 } from "baileys";
 import P from 'pino'
 import NodeCache from '@cacheable/node-cache';
@@ -20,7 +21,7 @@ import path from 'node:path'
 
 // local import
 import * as wawa from '#helper'
-import { safeRun, allPath, msToReadableTime, sendText } from './system/helper.js'
+import { allPath, msToReadableTime, sendText, safeRunAsync } from './system/helper.js'
 import patchMessageBeforeSending from "./system/patch-message-before-send.js";
 import UserManager from './system/manager-user.js'
 import PrefixManager from './system/manager-prefix.js'
@@ -115,14 +116,15 @@ const { saveCreds, state } = await useMultiFileAuthState(allPath.baileysAuth);
 const { version } = await fetchLatestWaWebVersion()
 
 const init = async () => {
-  await pluginManager.loadPlugins()
-  pluginManager.buildMenu()
+
 }
 
 const startSock = async function (opts = {}) {
 
 
   console.log("✔️ fungsi startSock di panggil");
+  await pluginManager.loadPlugins()
+  pluginManager.buildMenu()
 
   sock = makeWASocket({
     version,
@@ -137,13 +139,13 @@ const startSock = async function (opts = {}) {
     patchMessageBeforeSending,
     syncFullHistory: false,
     shouldSyncHistoryMessage: msg => {
-      console.log("should sycn history message", msg)
+      //console.log("should sycn history message", msg)
       return false
     },
   });
 
   sock.ev.process(async (ev) => {
-    if (ev['presence.update'] || ev['message-receipt.update']) {
+    if (ev['presence.update'] || ev['message-receipt.update']|| ev['creds.update'] || ev['connection.update']) {
       // console.log(ev)
 
     } else {
@@ -174,7 +176,7 @@ const startSock = async function (opts = {}) {
               "logout by user or uncompleted pairing. auth folder deleted. program stopped (please wait)",
             );
 
-            process.exitCode = 1000
+            process.exitCode = 0
             process.exit()
 
           }
@@ -186,7 +188,19 @@ const startSock = async function (opts = {}) {
 
         }
       } else if (connection == "open") {
+
         console.log("✅ terhubung ke whatsapp");
+
+        // read last restart messafe (if any)
+        const lastRestartMessage = path.join(allPath.tempFolder, 'message-restart.bin')
+        const result = await safeRunAsync(fs.promises.readFile, lastRestartMessage)
+        if (result.ok) {
+          console.log('found last restart message.. sending..')
+          const wm = proto.WebMessageInfo.decode(result.data)
+          await sock.sendMessage(wm.key.remoteJid, { text: `hey i born again! with pid: ${process.pid}` }, { quoted: wm })
+          await fs.promises.rm(lastRestartMessage)
+        }
+
       } else if (connection == "connecting") {
         console.log("🔃 menghubungkan ke whatsapp");
       }
@@ -383,6 +397,8 @@ const startSock = async function (opts = {}) {
 
 }
 
+
+// IPC
 process.on('message', async (message) => {
   if (message.type === 'uptime') {
     const print = msToReadableTime(message.data.uptime * 1000)
@@ -398,9 +414,9 @@ export { pluginManager, prefixManager, userManager, store, bot }
 
 
 
-
+// handling init
 const credsPath = path.join(import.meta.dirname, 'auth/creds.json')
-const credsExist = await safeRun(fs.promises.access, credsPath)
+const credsExist = await safeRunAsync(fs.promises.access, credsPath)
 if (!credsExist.ok) {
   console.log('no creds found. starting new login')
   // interface
@@ -429,10 +445,8 @@ if (!credsExist.ok) {
       console.log('bye!')
       process.exit(0)
     }
-    init()
     startSock({ pn: botPhoneNumber })
   } else if (userLoginMethod === loginMethod[1]) {
-    init()
     startSock({ qr: true })
   } else if (userLoginMethod === loginMethod[2]) {
     console.log('waduh knp tuh kira kira')
@@ -446,6 +460,5 @@ if (!credsExist.ok) {
 
 } else {
   console.log('start bot as usual')
-  init()
   startSock()
 }

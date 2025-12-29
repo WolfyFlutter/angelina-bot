@@ -20,16 +20,15 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
 handler.pluginName = 'ping 2'
 handler.description = 'sama kaya ping.. tapi ada durasi delay sendMessage'
 handler.command = ['p2']
-handler.category = ['system']
+handler.category = ['built-in']
 
 handler.config = {
     systemPlugin: true,
     bypassPrefix: true,
-    antiDelete: true,
 }
 
 handler.meta = {
-    fileName: 'ping.js',
+    fileName: 'p2.js',
     version: '1',
     author: botInfo.an,
     note: 'awawawa solid solid solid',

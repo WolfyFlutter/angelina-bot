@@ -20,21 +20,20 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
     return
 }
 
-handler.pluginName = 'update secondary text'
+handler.pluginName = 'secondary text set'
 handler.description = 'command ini buat ngatur secondary text...\n' +
     'cara pakai:\n' +
     'st angelina (buat set display name)\n' +
     'st get (buat dapetin current display name)'
 handler.command = ['st']
-handler.category = ['theme']
+handler.category = ['built-in']
 
 handler.config = {
     systemPlugin: true,
-    antiDelete: true,
 }
 
 handler.meta = {
-    fileName: 'set-secondary-text.js',
+    fileName: 'secondary-text.js',
     version: '1',
     author: botInfo.an,
     note: 'awuuuuu',

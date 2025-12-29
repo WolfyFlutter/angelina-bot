@@ -1,4 +1,4 @@
-import { botInfo, textOnlyMessage, userManager } from '#helper'
+import { botInfo, textOnlyMessage } from '#helper'
 
 /**
  * @param {import('../types/plugin.js').HandlerParams} params
@@ -7,21 +7,19 @@ import { botInfo, textOnlyMessage, userManager } from '#helper'
 async function handler({ sock, m, q, text, jid, command, prefix }) {
     if (!textOnlyMessage(m)) return
     if (q) return
-    if (!userManager.trustedJids.has(m.senderId)) return
-
-        process.exitCode = 1000
-        process.exit()
+    if (text) return
+    
+    await sock.sendMessage(jid, { text: 'pong' }, { quoted: m })
 }
 
 handler.pluginName = 'ping'
 handler.description = 'buat cek bot respond apa kagak.. simply just type ping'
-handler.command = ['restart']
-handler.category = ['system']
+handler.command = ['ping']
+handler.category = ['built-in']
 
 handler.config = {
     systemPlugin: true,
     bypassPrefix: true,
-    antiDelete: true,
 }
 
 handler.meta = {

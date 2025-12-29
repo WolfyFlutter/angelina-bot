@@ -28,8 +28,14 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
     if (text === 'all') {
         const content = pluginManager.forMenu.menuAllText
         const sampleCommand = `${pickRandom(pluginManager.mapCatWithCmdArray.get(pickRandom(pluginManager.categoryArray))).cmd}`
+        // PERLU DI PELAJARI
+        const _plugName = sampleCommand
+        const _prefix = pluginManager.plugins.get(sampleCommand).config?.bypassPrefix ? '' : prefix ? prefix : ''
+        const owo = `${_prefix}${_plugName}`
+        // PERLU DI PELAJARI
+
         const footer = `\n\ngunakan param *-h* untuk mengetahui fungsi command.` +
-            `\ncontoh: *${sampleCommand} -h*`
+            `\ncontoh: *${owo} -h*`
         const print = content + footer
         return await sendFancyText(sock, jid, {
             text: print,
@@ -42,10 +48,15 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
 
     const validCategory = pluginManager.forMenu.category.get(text)
     if (!validCategory) return sendText(sock, jid, `maaf kak ${tag(m.senderId)}... menu dengan kategori *${text}* tidak tersedia`)
-    const content = pickRandom(pluginManager.mapCatWithCmdArray.get(text)).cmd
+    // PERLU DI PELAJARI
+    const sampleCommand = pickRandom(pluginManager.mapCatWithCmdArray.get(text)).cmd
+    const _prefix = pluginManager.plugins.get(sampleCommand).config?.bypassPrefix ? '' : prefix ? prefix : ''
+    const content = `${_prefix}${sampleCommand}`
     const footer = content ? `\n\ngunakan perintah *-h* untuk mengetahui fungsi command.` +
         `\ncontoh: *${content} -h*` : `\nwaduh kosong`
     const print = `${validCategory}${footer}`
+    // PERLU DI PELAJARI
+
     return await sendFancyText(sock, jid, {
         text: print,
         title: botInfo.dn,
@@ -55,18 +66,18 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
     })
 }
 
-handler.pluginName = 'menu'
+handler.pluginName = 'tampilkan menu'
 handler.description = 'command ini buat nampiin menu.\n' +
     'contoh penggunaan:\n' +
     'menu\n' +
     'menu <category>\n' +
     'menu all'
 handler.command = ['menu']
-handler.category = ['system']
+handler.category = ['built-in']
 
 handler.config = {
     systemPlugin: true,
-    preventDelete: true,
+    bypassPrefix: true
 }
 
 handler.meta = {

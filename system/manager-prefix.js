@@ -66,9 +66,9 @@ class PrefixManager {
     isMatchPrefix(text) {
 
         //if (typeof (text) !== "string") return { valid, prefix }
-        if (!this.isEnable) return { valid: true, prefix:null }
+        if (!this.isEnable) return { valid: true, prefix: undefined }
         let prefix = this.prefixList.find(p => text.trim().startsWith(p))
-        return prefix ? { valid: true, prefix } : { valid: false, prefix: null }
+        return prefix ? { valid: true, prefix } : { valid: false, prefix }
     }
 }
 

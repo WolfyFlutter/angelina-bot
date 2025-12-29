@@ -29,16 +29,14 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
 handler.pluginName = 'memory usage'
 handler.description = 'cek memory usage node js'
 handler.command = ['mem']
-handler.category = ['system']
+handler.category = ['built-in']
 
 handler.config = {
     systemPlugin: true,
-    bypassPrefix: true,
-    antiDelete: true,
 }
 
 handler.meta = {
-    fileName: 'ping.js',
+    fileName: 'memory.js',
     version: '1',
     author: botInfo.an,
     note: 'awawawa solid solid solid',

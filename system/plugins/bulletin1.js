@@ -11,10 +11,14 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
     if (!textOnlyMessage(m)) return
     if (q) return
 
-    if (!text?.trim()) return sendText(sock, jid, `mana param nya?`, m)
+    // help
+    const pc = `${prefix || ''}${command}`
+    const showHelp = `\n\nketik *${pc} -h* untuk bantuan`
+
+    if (!text?.trim()) return sendText(sock, jid, `mana param nya?${showHelp}`)
 
     if (text.trim() === 'get') {
-        const pc = `${prefix||''}${command}`
+        const pc = `${prefix || ''}${command}`
         const bulletinForShare = pc + ' ' + botInfo.b1f + 'text' + botInfo.b1b
         await sendText(sock, jid, bulletinForShare)
         return
@@ -37,21 +41,20 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
 }
 
 handler.pluginName = 'bulletin level 1'
-handler.description = 'command buat atur bulletin level 1.\n' +
+handler.description = 'command buat atur bulletin level 1.\n\n' +
     'cara pakai\n' +
     '*b1 ᯓ★ text ★* buat set bulletin.\n' +
     '*b1 get* buat dapetin current bulletin.\n' +
     '*b1 clear* buat bersihin bulletin.'
 handler.command = ['b1']
-handler.category = ['theme']
+handler.category = ['built-in']
 
 handler.config = {
     systemPlugin: true,
-    antiDelete: true,
 }
 
 handler.meta = {
-    fileName: 'set-bulletin-level-1.js',
+    fileName: 'bulletin1.js',
     version: '1',
     author: botInfo.an,
     note: 'furry itu seksi',

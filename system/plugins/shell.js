@@ -18,7 +18,7 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
     try {
         const { stderr, stdout } = await execPromise(text)
         let output = stdout || stderr || '✅ Tidak ada output.'
-        if (output.length > 1000) output = output.slice(0, 1000) + '\n\n[Output terpotong...]'
+        if (output.length > 1000) output = output.substring(0, 1000) + '\n\n[Output terpotong...]'
         await sendText(sock, jid, output.trim(), m)
     } catch (e) {
         await sendText(sock, jid, `❌ Error:\n${e.message}`, m)
@@ -26,9 +26,9 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
 }
 
 handler.pluginName = 'shell'
-handler.description = 'shell'
+handler.description = 'panggil shell/terminal'
 handler.command = ['$']
-handler.category = ['advanced']
+handler.category = ['built-in']
 
 handler.config = {
     systemPlugin: true,
@@ -36,7 +36,7 @@ handler.config = {
 }
 
 handler.meta = {
-    fileName: 'advanced-shell.js',
+    fileName: 'shell.js',
     version: '1',
     author: botInfo.an,
     note: 'debag debug',

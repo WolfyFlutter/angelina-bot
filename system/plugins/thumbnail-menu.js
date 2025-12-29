@@ -26,21 +26,20 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
     return
 }
 
-handler.pluginName = 'update thumbnail menu'
+handler.pluginName = 'thumbnail menu update'
 handler.description = 'command ini buat ngatur thumbnail menu...\n' +
     'cara pakai:\n' +
     'tm <url> (buat set display name)\n' +
     'tm get (buat dapetin current display name)'
 handler.command = ['tm']
-handler.category = ['theme']
+handler.category = ['built-in']
 
 handler.config = {
     systemPlugin: true,
-    antiDelete: true,
 }
 
 handler.meta = {
-    fileName: 'set-thumbnail-menu.js',
+    fileName: 'thumbnail-menu.js',
     version: '1',
     author: botInfo.an,
     note: 'pilihlah thumbnail yang seksi',

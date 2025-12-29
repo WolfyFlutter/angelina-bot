@@ -7,6 +7,7 @@
  * @property {string | undefined} text
  * @property {string | undefined} prefix
  * @property {string | undefined} command
+ * @property {import('baileys').WAMessage} IWMI
  */
 
 export {};

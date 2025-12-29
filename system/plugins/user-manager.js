@@ -1,4 +1,4 @@
-import { sendText, userManager, botInfo, textOnlyMessage } from '../helper.js'
+import { sendText, userManager, botInfo, textOnlyMessage, store } from '../helper.js'
 import { jidDecode } from 'baileys'
 
 /**
@@ -11,15 +11,17 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
     if (!userManager.trustedJids.has(m.senderId)) return
     if (!textOnlyMessage(m)) return
 
-    const footer = 'ketik `' + command + ' -h` untuk bantuan.'
+    const pc = `${prefix || ''}${command}`
+    const showHelp = `\n\nketik *${pc} -h* untuk bantuan`
+
     const param = text.match(/\S+/g)
 
 
     if (!text) {
         const listTrustedUser = Array.from(userManager.trustedJids.entries()).map((v, i) => (`[${(i + 1)}] ${v[1]}\n> ${v[0]}`)).join('\n\n')
         const listBlockedUser = Array.from(userManager.blockedJids.entries()).map((v, i) => (`[${(i + 1)}] ${v[1]}\n> ${v[0]}`)).join('\n\n')
-        const print = `🛡️ trusted user\n\n` + listTrustedUser + '\n\n\n' + '🚫 blocked user\n\n' + (listBlockedUser || 'tak ada')
-        return await sendText(sock, jid, print, m)
+        const print = `🛡️ trusted user\n\n` + listTrustedUser + '\n\n\n' + '🚫 blocked user\n\n' + (listBlockedUser || 'tak ada' + showHelp)
+        return await sendText(sock, jid, print)
     }
     const opt = param[0]
 
@@ -73,31 +75,31 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
             return await sendText(sock, jid, unblock_print)
     }
 
-    return await sendText(sock, jid, 'awikwok... you need to read some doc bro... `' + command + ' -h` always be there for you.', m)
+    return await sendText(sock, jid, 'uhh... invalid command' + showHelp, m)
 }
 
-handler.pluginName = 'menu'
-handler.description = 'command ini buat manage userManager.. manage owner, manage blocked userManager.\n' +
+handler.pluginName = 'user manager'
+handler.description = 'command ini buat manage user. manage owner, manage blocked user.\n\n' +
     'contoh penggunaan:\n' +
-    'untuk menambah owner kalian bisa gunakan command:'
-    '*user trust <mention> [\*note]*\n' +
-    'atau reply ke pesan *user trust [\*note]*\n' +
-    'menu <category>\n' +
-    'menu all'
+    'user trust <mention> [\*note]\n(tambah trusted)\n\n' +
+    'atau reply ke pesan dan ketik user trust [\*note]\n(tambah trusted)\n\n' +
+    'user untrust <index>\n(delete user trusted)\n\n' +
+    'user block <mention> [\*note]\n(tambah blocked)\n\n' +
+    'atau reply ke pesan dan ketik user block [\*note]\n(tambah blocked)\n\n' +
+    'user unblock <index>\n(delete user blocked)\n' +
+    '[*note] sebenarnya opsional, bisa kosong.. maka otomatis akan pick pushname dari store. tapi kalau gak ada pushname di store maka gagal. saran aku kamu isikan aja [*note] nya dengan alias yang bisa kamu ingat'
 handler.command = ['user']
-handler.category = ['manager']
+handler.category = ['built-in']
 
 handler.config = {
     systemPlugin: true,
-    antiDelete: true,
-    bypassPrefix: true,
 }
 
 handler.meta = {
-    fileName: 'manager-userManager.js',
+    fileName: 'user-manager.js',
     version: '1',
     author: botInfo.an,
-    note: 'feel so cool',
+    note: 'awawaw',
 }
 
 export default handler

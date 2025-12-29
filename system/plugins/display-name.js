@@ -11,29 +11,28 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
     if (!textOnlyMessage(m)) return
     if (q) return
 
-    if (!text?.trim()) return await sendText(sock, jid, `mana namanya wok`, m)
+    if (!text?.trim()) return await sendText(sock, jid, `mana namanya wok? atau isi param -get buat dapetin current name`, m)
     const pc = `${prefix || ''}${command}`
-    if (text && text.trim() === 'get') return await sendText(sock, jid, `${pc} ${botInfo.dn}`)
+    if (text && text.trim() === '-get') return await sendText(sock, jid, `${pc} ${botInfo.dn}`)
     updateDisplayName(text)
     await sendText(sock, jid, `display name updated! coba ketik menu`)
     return
 }
 
-handler.pluginName = 'update display name'
+handler.pluginName = 'display name update'
 handler.description = 'command ini buat ngatur display name...\n' +
     'cara pakai:\n' +
     'dn angelina (buat set display name)\n' +
-    'dn get (buat dapetin current display name)'
+    'dn -get (buat dapetin current display name)'
 handler.command = ['dn']
-handler.category = ['theme']
+handler.category = ['built-in']
 
 handler.config = {
     systemPlugin: true,
-    antiDelete: true,
 }
 
 handler.meta = {
-    fileName: 'set-display-name.js',
+    fileName: 'display-name.js',
     version: '1',
     author: botInfo.an,
     note: 'ngihok',

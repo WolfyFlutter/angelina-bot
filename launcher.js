@@ -22,8 +22,10 @@ let a = async function () {
             })
 
             child.on('exit', (code) => {
-                if (code === 1000) {
+                if (code === 1) {
                     resolve('restart')
+                }else{
+                    resolve('exit')
                 }
             })
 

@@ -2,12 +2,12 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { pipeline } from 'node:stream/promises'
 
-export async function safeRun(fn, ...params) {
+export async function safeRunAsync(fn, ...params) {
     try {
         const result = await fn(...params)
         return { ok: true, data: result }
     } catch (error) {
-        console.error('[safeRun]', error.message)
+        console.warn('[safeRunAsync]', error.message)
         return { ok: false, data: error.message }
     }
 }
@@ -17,7 +17,7 @@ export function safeRunSync(fn, ...params) {
         const result = fn(...params)
         return { ok: true, data: result }
     } catch (error) {
-        console.error('[safeRunSync]', error.message)
+        console.warn('[safeRunSync]', error.message)
         return { ok: false, data: error.message }
     }
 }
@@ -113,17 +113,18 @@ export function getParam(text) {
     return text.match(/\S+/g)
 }
 
-export async function writeFileSafe(dest, data) {
-    const dir = path.dirname(dest)
-    await fs.promises.mkdir(dir, { recursive: true })
-    await fs.promises.writeFile(dest, data)
-}
 
 
-export async function writeFileStreamSafe(sourceStream, destinationDir) {
+export async function writeFileStreamSafeAsync(sourceStream, destinationDir) {
     const dir = path.dirname(destinationDir)
     await fs.promises.mkdir(dir, { recursive: true })
     const destinationStream = fs.createWriteStream(destinationDir)
     await pipeline(sourceStream, destinationStream)
 }
 
+export async function writeFileBufferSafeAsync (buffer, destinationPath){
+    const dir = path.dirname(destinationPath)
+    await fs.promises.mkdir(dir, {recursive: true})
+    await fs.promises.writeFile(destinationPath, buffer)
+    console.log(`[file saved at] ${destinationPath}`)
+}

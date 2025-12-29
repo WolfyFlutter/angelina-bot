@@ -1,4 +1,4 @@
-import { sendText, userManager, botInfo, textOnlyMessage } from '../helper.js'
+import { sendText, userManager, botInfo, textOnlyMessage, store } from '../helper.js'
 import { GroupListenMode, PrivateListenMode } from '../manager-user.js'
 import { isJidGroup } from 'baileys'
 
@@ -10,25 +10,24 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
     if (!userManager.trustedJids.has(m.senderId)) return
     if (!textOnlyMessage(m)) return
 
+    const pc = `${prefix || ''}${command}`
+    const showHelp = `\n\nketik *${pc} -h* untuk bantuan`
 
-    const footer = 'ketik `' + command + ' -h` untuk bantuan.'
     const param = text.match(/\S+/g)
-
 
     if (!text) {
         const { groupChatListenMode, listen, privateChatListenMode } = userManager.getStatus(jid)
         const g = ['self', 'public', 'default']
         const p = ['self', 'public']
 
-        let gc = ''
         let tg = ''
-        const headers = 'chat mode\n'
+        const gc = `> group: *${g[groupChatListenMode]}*`
+
         if (isJidGroup(jid)) {
-            gc = `> group: *${g[groupChatListenMode]}*`
             tg = groupChatListenMode === GroupListenMode.DEFAULT ? ` *(${(listen ? 'on' : 'off')})*` : ''
         }
         const pc = `> private: *${p[privateChatListenMode]}*`
-        const print = 'chat mode\n' + gc + tg + '\n' + pc + '\n\n' + footer
+        const print = '💬 chat mode\n\n' + gc + tg + '\n' + pc + showHelp
         return await sendText(sock, jid, print)
     }
     const opt = param[0]
@@ -47,7 +46,7 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
                 const isChanged = userManager.groupChatToggle(GroupListenMode.PUBLIC)
                 infog = isChanged ? 'bot akan respond siapapun di manapun di grup.' : 'udah woi'
             } else {
-                infog = 'available param: self, everyone, default.\n\n' + footer
+                infog = 'available param: self, everyone, default.' + showHelp
             }
             return await sendText(sock, jid, infog)
         case "private":
@@ -59,7 +58,7 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
                 userManager.privateChatToggle(PrivateListenMode.PUBLIC)
                 infop = `baik.. aku akan merespond siapapun yang chat pribadi`
             } else {
-                infop = 'available param: self, everyone\n\n' + footer
+                infop = 'available param: self, everyone' + showHelp
             }
             return await sendText(sock, jid, infop)
 
@@ -83,27 +82,29 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
 }
 
 handler.pluginName = 'chat manager'
-handler.description = 'command ini buat manage user.. manage owner, manage blocked user.\n' +
-    'contoh penggunaan:\n' +
-    'untuk menambah owner kalian bisa gunakan command:'
-'*user trust <mention> [\*note]*\n' +
-    'atau reply ke pesan *user trust [\*note]*\n' +
-    'menu <category>\n' +
-    'menu all'
+handler.description = 'plugin ini buat manage response tiap chat. mirip bot mode publik/self tapi lebih fleksibel dan easy to use.\n' +
+    'untuk jenis chat di bagi menjadi 2 yaitu *private* dan *group*.\nchat private memiliki 2 mode yaitu self dan public.\nchat group memiliki 3 mode yaitu self, public dan default.\n' +
+    'mode self dan public pada group itu akan *meng-override* mode default tapi konfig default masi tetap disimpan (jika kembali ke mode default)\n\n' +
+    'cara pakai\n\n' +
+    'chat group self\n(atur self ke semua group, listen hanya ke owner)\n\n' +
+    'chat group public\n(atur public ke semua group)\n\n' +
+    'chat group default\n(atur bot listen default)\n\n' +
+    'chat on\n(listen ke current group, harus mode default)\n\n' +
+    'chat off\n(unlisten ke current group, harus mode default)\n\n' +
+    'chat private self\n(gak respond siapapun di private chat kecuali owner)\n\n' +
+    'chat private public\n(respond siapapun di private chat)'
 handler.command = ['chat']
-handler.category = ['manager']
+handler.category = ['built-in']
 
 handler.config = {
     systemPlugin: true,
-    antiDelete: true,
-    bypassPrefix: true,
 }
 
 handler.meta = {
-    fileName: 'manager-user.js',
+    fileName: 'chat-manager.js',
     version: '1',
     author: botInfo.an,
-    note: 'feel so cool',
+    note: 'feel safe',
 }
 
 export default handler

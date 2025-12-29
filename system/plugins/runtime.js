@@ -16,18 +16,17 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
     return
 }
 
-handler.pluginName = 'cek runtime bot'
-handler.description = 'cek runtime bot'
+handler.pluginName = 'runtime check'
+handler.description = 'cek runtime atau uptime bot dari pertama kali di jalankan'
 handler.command = ['rt']
-handler.category = ['system']
+handler.category = ['built-in']
 
 handler.config = {
     systemPlugin: true,
-    preventDelete: true,
 }
 
 handler.meta = {
-    fileName: 'system-runtime.js',
+    fileName: 'runtime.js',
     version: '1',
     author: botInfo.an,
     note: 'bisa yok 1 hari lebih',

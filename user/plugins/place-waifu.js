@@ -19,11 +19,11 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
 
 handler.pluginName = 'place waifu'
 handler.description = 'dapatkan gambar waifu'
-handler.command = ['placewaifu']
-handler.category = ['test']
+handler.command = ['waifu','sexy']
+handler.category = ['random']
 
 handler.meta = {
-    fileName: 'halo.js',
+    fileName: 'place-waifu.js',
     version: '1',
     author: 'ambatukam',
     note: 'ambasing',
