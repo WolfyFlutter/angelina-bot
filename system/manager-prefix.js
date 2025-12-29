@@ -1,4 +1,4 @@
-import { loadJson, saveJson, allPath } from "./helper.js"
+import { loadJson, saveJson, allPath, loadJsonFallbackSync } from "./helper.js"
 import { pluginManager } from '../index.js'
 
 class PrefixManager {
@@ -6,7 +6,14 @@ class PrefixManager {
     prefixList = []
 
     constructor() {
-        const json = loadJson(allPath.prefix)
+        const pDefault = {
+            "isEnable": false,
+            "prefixList": [
+                "/",
+                "❄️"
+            ]
+        }
+        const json = loadJsonFallbackSync(allPath.prefix, pDefault)
         this.isEnable = json.isEnable
         this.prefixList = json.prefixList
     }

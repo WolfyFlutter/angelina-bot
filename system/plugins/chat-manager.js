@@ -21,12 +21,12 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
         const p = ['self', 'public']
 
         let tg = ''
-        const gc = `> group: *${g[groupChatListenMode]}*`
+        const gc = `🧑‍🧑‍🧒‍🧒 group: *${g[groupChatListenMode]}*`
 
         if (isJidGroup(jid)) {
             tg = groupChatListenMode === GroupListenMode.DEFAULT ? ` *(${(listen ? 'on' : 'off')})*` : ''
         }
-        const pc = `> private: *${p[privateChatListenMode]}*`
+        const pc = `👥 private: *${p[privateChatListenMode]}*`
         const print = '💬 chat mode\n\n' + gc + tg + '\n' + pc + showHelp
         return await sendText(sock, jid, print)
     }

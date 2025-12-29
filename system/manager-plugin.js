@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { pathToFileURL } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
 import { botInfo } from './bot-info.js'
 import { prefixManager, allPath } from './helper.js'
@@ -51,7 +51,7 @@ export default class PluginManager {
                 .map(obj => {
                     const p = obj.plugin[1].config?.bypassPrefix ? '' :
                         prefix.isEnable ? prefix.prefixList[0] : ''
-                    return `${botInfo.b2f}${p}${obj.cmd}  _${obj.plugin[1].pluginName}_${botInfo.b2b}`
+                    return `${botInfo.b2f}${p}${obj.cmd} (_${obj.plugin[1].pluginName}_)${botInfo.b2b}`
                 }).sort()
                 .join('\n')}`])
         ar.forEach(v => this.forMenu.category.set(v[0], v[1]))
@@ -102,7 +102,7 @@ export default class PluginManager {
                     if (sameCommand) throw Error(`plugin ini memiliki command yang sama dengan ${sameCommand.pluginName} yaitu command ${command[i]}`)
                 }
 
-                handler.dir = fileUrl
+                handler.dir = fileURLToPath(fileUrl)
 
                 // add to map also handle multiple command
                 command.forEach(cmd => {
@@ -127,7 +127,7 @@ export default class PluginManager {
         if (typeof (module?.default) !== 'function') return error('modul bukan jenis export default')
 
         // plugin name check
-        const { pluginName, command, category } = module.default
+        const { pluginName, command, category, meta } = module.default
         if (!stringNotEmpty(pluginName)) return error('handler.pluginName nya invalid. musti string, depan belakang gak boleh ada spasi')
 
         // command checking
@@ -138,6 +138,10 @@ export default class PluginManager {
 
         // category checking
         if (!arrayNotEmpty(category)) return error(`handler.category invalid`)
+
+        // meta file name checking
+        if(!/^[a-zA-Z0-9-]+\.js$/g.test(meta?.fileName)) return error (`handler.meta.fileName invalid`)
+        
 
         return sucess('no error')
     }

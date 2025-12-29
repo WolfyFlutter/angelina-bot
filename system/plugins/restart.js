@@ -13,8 +13,8 @@ async function handler({ sock, m, q, text, jid, command, prefix, IWMI }) {
     await sendText(sock, jid, `killing the old me... my pid: ${process.pid}`)
     const buff = proto.WebMessageInfo.encode(IWMI).finish()
     const dest = path.join(allPath.tempFolder, 'message-restart.bin')
-    await writeFileBufferSafeAsync(buff, dest)
-    process.exitCode = 1
+    await writeFileBufferSafeAsync(dest, buff)
+    process.exitCode = 69
     process.exit()
 
 }

@@ -1,6 +1,19 @@
-import { loadJson, saveJson, allPath } from './helper.js'
+import {saveJson, allPath, loadJsonFallbackSync } from './helper.js'
 
-const json = loadJson(allPath.botInfo)
+const fallback = {
+  "tm": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj8Jf0AJ4g-4_jHICkPf_9EpaUHjZowQnx-WNJBPgJbuAJoZf0S8prMdhsF4EiB5PeVZ52o2y7oiTMN7NVuAkkMQzVMXKBzGt1-5eGb2oWyW4sKrVHZBrzVMd-CMdHszvH9QRCDhoeQe5qqD2AJVMQUEmISh2VjAphGLpXvoaEsOmjZT7hv7zlwIgoLTXc/s16000/angelina_thumbnail_480p.webp",
+  "stm": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj8Jf0AJ4g-4_jHICkPf_9EpaUHjZowQnx-WNJBPgJbuAJoZf0S8prMdhsF4EiB5PeVZ52o2y7oiTMN7NVuAkkMQzVMXKBzGt1-5eGb2oWyW4sKrVHZBrzVMd-CMdHszvH9QRCDhoeQe5qqD2AJVMQUEmISh2VjAphGLpXvoaEsOmjZT7hv7zlwIgoLTXc/s16000/angelina_thumbnail_480p.webp",
+  "dn": "/ᐠ > ˕ <マ angelina bot~ ₊˚⊹♡",
+  "st": "by wolep",
+  "an": "wolep",
+  "b1f": " ❄️ ⌞  *",
+  "b1b": "*  ⌝",
+  "b2f": "   ᯓ   ",
+  "b2b": "",
+  "b3f": "*📄 ",
+  "b3b": "*"
+}
+const json = loadJsonFallbackSync(allPath.botInfo, fallback)
 
 const botInfo = {
     tm: json.tm,

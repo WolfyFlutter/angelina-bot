@@ -86,7 +86,7 @@ handler.description = 'command ini buat manage user. manage owner, manage blocke
     'user untrust <index>\n(delete user trusted)\n\n' +
     'user block <mention> [\*note]\n(tambah blocked)\n\n' +
     'atau reply ke pesan dan ketik user block [\*note]\n(tambah blocked)\n\n' +
-    'user unblock <index>\n(delete user blocked)\n' +
+    'user unblock <index>\n(delete user blocked)\n\n' +
     '[*note] sebenarnya opsional, bisa kosong.. maka otomatis akan pick pushname dari store. tapi kalau gak ada pushname di store maka gagal. saran aku kamu isikan aja [*note] nya dengan alias yang bisa kamu ingat'
 handler.command = ['user']
 handler.category = ['built-in']

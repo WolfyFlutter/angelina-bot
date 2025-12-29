@@ -13,7 +13,7 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
 
     if (!text?.trim()) return await sendText(sock, jid, `mana namanya wok? atau isi param -get buat dapetin current name`, m)
     const pc = `${prefix || ''}${command}`
-    if (text && text.trim() === '-get') return await sendText(sock, jid, `${pc} ${botInfo.dn}`)
+    if (text && text.trim() === 'get') return await sendText(sock, jid, `${pc} ${botInfo.dn}`)
     updateDisplayName(text)
     await sendText(sock, jid, `display name updated! coba ketik menu`)
     return
@@ -23,7 +23,7 @@ handler.pluginName = 'display name update'
 handler.description = 'command ini buat ngatur display name...\n' +
     'cara pakai:\n' +
     'dn angelina (buat set display name)\n' +
-    'dn -get (buat dapetin current display name)'
+    'dn get (buat dapetin current display name)'
 handler.command = ['dn']
 handler.category = ['built-in']
 

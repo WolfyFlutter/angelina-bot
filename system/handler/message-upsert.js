@@ -1,5 +1,5 @@
 // local import
-import { getErrorLine, sendText, pluginHelpSerialize, userManager, prefixManager, pluginManager, store, bot, allPath } from '../helper.js'
+import { getErrorLine, sendText, pluginHelpSerialize, userManager, prefixManager, pluginManager, store, bot, allPath, dirPovCwd } from '../helper.js'
 import serialize from "../serialize.js";
 import consoleMessage from '../console-message.js';
 import { Permission } from '../manager-user.js'
@@ -208,7 +208,7 @@ export default async function messageUpsertHandler(sock, bem) {
                 } catch (e) {
                     console.error(e.stack)
                     const errorLine = getErrorLine(e.stack) || 'gak tauu..'
-                    const print = `🤯 *plugin fail*\n✏️ used command: ${command}\n📄 dir: ${fileURLToPath(handler.dir).replace(allPath.root, '').replaceAll('\\', '/')}\n🐞 line: ${errorLine}\n✉️ error message:\n${e.message}`
+                    const print = `🤯 *plugin fail*\n✏️ used command: ${command}\n📄 dir: ${dirPovCwd(handler.dir)}\n🐞 line: ${errorLine}\n✉️ error message:\n${e.message}`
                     //await react(m, '🥲')
                     await sendText(sock, m.chatId, print, m)
                     continue

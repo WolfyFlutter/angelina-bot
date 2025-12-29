@@ -4,7 +4,7 @@ let a = async function () {
     let run = function () {
         return new Promise((resolve, reject) => {
             const child = fork('./index.js', [], {
-                execArgv: ['--expose-gc']
+                execArgv: ['--expose-gc','--inspect']
             });
 
 
@@ -22,7 +22,8 @@ let a = async function () {
             })
 
             child.on('exit', (code) => {
-                if (code === 1) {
+                console.log('ada exit', code)
+                if (code === 69) {
                     resolve('restart')
                 }else{
                     resolve('exit')
@@ -30,7 +31,7 @@ let a = async function () {
             })
 
             child.on('error', (error) => {
-                console.log(error)
+                console.log('ada error', error)
                 resolve('restart')
             })
         })

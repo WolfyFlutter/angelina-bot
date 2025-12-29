@@ -1,5 +1,4 @@
-import { fileURLToPath } from 'node:url'
-import { botInfo as b,allPath } from '../helper.js'
+import { botInfo as b, dirPovCwd } from './helper.js'
 
 export function pluginHelpSerialize(handler) {
     const emptyPlaceholder = '(tidak ada)'
@@ -15,6 +14,6 @@ export function pluginHelpSerialize(handler) {
     const fileName = `${b.b3f}meta file name${b.b3b}\n${handler.meta?.fileName || notFound}\n\n`
     const author = `${b.b3f}author ✨${b.b3b}\n${handler.meta?.author || notFound}\n\n`
     const note = `${b.b3f}author's note${b.b3b}\n${handler.meta?.note || notFound}\n\n`
-    const dir = `${b.b3f}lokasi file${b.b3b}\n./${fileURLToPath(handler.dir).replace(allPath.root, '').replaceAll('\\', '/')}`
+    const dir = `${b.b3f}lokasi file${b.b3b}\n${dirPovCwd(handler.dir)}`
     return header + name + desc + category + command + needPrefix + author + note + fileName + version + dir
 }

@@ -2,33 +2,33 @@
 import { getContentType, normalizeMessageContent } from 'baileys'
 import { store, bot } from './helper.js'
 
-export default function (webMessagInfo) {
+export default function (WAMessage) {
     //let m = structuredClone(mOri)
 
     // normalize message
-    const iMessage = normalizeMessageContent(webMessagInfo.message)
+    const WAMessageContent = normalizeMessageContent(WAMessage.message)
 
     // m.chatId
-    const chatId = webMessagInfo.key.remoteJid
+    const chatId = WAMessage.key.remoteJid
     // m.senderId
-    const senderId = webMessagInfo.key.participant || (webMessagInfo.key.fromMe ? bot.lid : webMessagInfo.key.remoteJid)
+    const senderId = WAMessage.key.participant || (WAMessage.key.fromMe ? bot.lid : WAMessage.key.remoteJid)
     // m.pushName
-    const pushName = webMessagInfo.pushName
+    const pushName = WAMessage.pushName
     // m.type
-    const type = getContentType(iMessage)
+    const type = getContentType(WAMessageContent)
     // m.text
     const text =
         // human
-        iMessage?.conversation || // text 
-        iMessage?.[type]?.text || // teks hyperlink, thumbnail dll
-        iMessage?.[type]?.caption || // gambar, video
+        WAMessageContent?.conversation || // text 
+        WAMessageContent?.[type]?.text || // teks hyperlink, thumbnail dll
+        WAMessageContent?.[type]?.caption || // gambar, video
         null
 
     // m.timestamp
-    const timestamp = webMessagInfo.messageTimestamp
+    const timestamp = WAMessage.messageTimestamp
 
     // m.messageId
-    const messageId = webMessagInfo.key.id
+    const messageId = WAMessage.key.id
 
     const result = {
         chatId,
@@ -42,20 +42,20 @@ export default function (webMessagInfo) {
 
     // m.key <-> jadi define property
     Object.defineProperty(result, 'key', {
-        get() { return webMessagInfo.key },
+        get() { return WAMessage.key },
         enumerable: true
     })
 
     // mese <-> jadi define property
     Object.defineProperty(result, 'message', {
-        get() { return iMessage },
+        get() { return WAMessageContent },
         enumerable: true
     })
 
     // m.q <-> jadi define property
     Object.defineProperty(result, 'q', {
         get() {
-            const qctx = iMessage?.[type]?.contextInfo
+            const qctx = WAMessageContent?.[type]?.contextInfo
             const q_iMessage = normalizeMessageContent(qctx?.quotedMessage)
             if (!q_iMessage) return undefined
 
@@ -77,7 +77,7 @@ export default function (webMessagInfo) {
             // m.q.pushName
             const q_pushName = store.contacts.get(q_senderId)?.notify || null
             q = {
-                chatId: webMessagInfo.key.remoteJid,
+                chatId: WAMessage.key.remoteJid,
                 senderId: q_senderId,
                 pushName: q_pushName,
                 type: q_type,
@@ -87,7 +87,7 @@ export default function (webMessagInfo) {
             Object.defineProperty(q, 'key', {
                 get() {
                     const q_key = {
-                        remoteJid: q_iMessage ? webMessagInfo.key.remoteJid : null,
+                        remoteJid: q_iMessage ? WAMessage.key.remoteJid : null,
                         id: qctx?.stanzaId || null,
                         participant: qctx?.participant || null,
                         fromMe: bot.lid === qctx?.participant || bot.pn === qctx?.participant

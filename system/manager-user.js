@@ -1,4 +1,4 @@
-import { loadJson, saveJson, allPath } from './helper.js'
+import { loadJson, saveJson, allPath, loadJsonFallbackSync } from './helper.js'
 import { jidDecode } from "baileys"
 
 // path definition
@@ -13,17 +13,20 @@ export default class UserManager {
   privateChatListenMode = PrivateListenMode.SELF
 
   constructor() {
-    const bjJson = loadJson(allPath.blockedJids)
+    const bjJson = loadJsonFallbackSync(allPath.blockedJids, {})
     this.blockedJids = new Map(Object.entries(bjJson))
 
-    const tjJson = loadJson(allPath.trustedJids);
+    const tjJson = loadJsonFallbackSync(allPath.trustedJids, {});
     this.trustedJids = new Map(Object.entries(tjJson));
 
-    const gwJson = loadJson(allPath.groupWhitelist);
+    const gwJson = loadJsonFallbackSync(allPath.groupWhitelist, {});
     this.groupsWhitelist = new Map(Object.entries(gwJson));
 
-
-    const cmJson = loadJson(allPath.chatListenMode)
+    const clmDefault = {
+      "group": 0,
+      "private": 1
+    }
+    const cmJson = loadJsonFallbackSync(allPath.chatListenMode, clmDefault)
     this.groupChatListenMode = cmJson.group
     this.privateChatListenMode = cmJson.private
   }
@@ -88,7 +91,7 @@ export default class UserManager {
   }
 
   groupChatToggle(chatMode) {
-    if(this.groupChatListenMode === chatMode) return false
+    if (this.groupChatListenMode === chatMode) return false
     this.groupChatListenMode = chatMode
     this.saveChatListenMode()
     return true
