@@ -98,3 +98,8 @@ pilih qr apa pairing code
 lalu cepet" kirim pesan ke bot dengan command request_owner (buat jadi owner pertama) via private chat, bisa juga di pakai self bot (diri sendiri jadi bot, kirim nya ke diri sendiri juga)
 enjoy
 ```
+
+
+join grup wacap ku buat share plugin, saran, dll
+
+https://chat.whatsapp.com/HjDJzwSBZQW0cLYbJorXP2
