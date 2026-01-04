@@ -13,6 +13,7 @@ fitur
 - eval (buat yg suka main kode)
 - eval async (eval juga tapi di bungkus async function)
 - shell access
+- fitur lock dan unlock, cara pakai ketik lock <tag bot>, dan unlock <tag bot>
 
 - small ram usage
 - fast and light weight
