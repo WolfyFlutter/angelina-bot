@@ -1,3 +1,12 @@
+update... dikit...
+beberapa yg pakai sc angelina, menu nya di edit sedemikian rupa.. sungguh kreatif :v 
+
+makasih ges yg udh cobain
+
+<img width="4096" height="1751" alt="IMG_20260201_190714" src="https://github.com/user-attachments/assets/6c4aec59-8875-4c85-90a8-802312d54b22" />
+
+end of quick update
+
 
 ![Screenshot_2025-12-29-22-19-02-787-edit_com whatsapp](https://github.com/user-attachments/assets/97b8a530-3853-4024-b4d4-ebc1109eae4b)
 
