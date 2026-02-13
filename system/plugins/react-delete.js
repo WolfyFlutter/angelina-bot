@@ -9,7 +9,7 @@ async function handler({ sock, m, q, text, jid, command, prefix }) {
     if (!userManager.trustedJids.has(m.senderId)) return
     if (m.type !== "reactionMessage") return
     const qmk = m.message.reactionMessage.key // qmk = quoted message key
-    const botMessage = qmk.participant === bot.lid || qmk.remoteJid === m.senderId
+    const botMessage = qmk.participant === bot.lid || qmk.remoteJid === m.senderId || qmk.fromMe
     if (!botMessage) return
 
     const key = { ...qmk }
