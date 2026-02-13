@@ -18,7 +18,7 @@ const unlockText = 'bot unlock 🔓✨\nlet\'s play!'
 
 
 export default async function messageUpsertHandler(sock, bem) {
-        
+
     const { messages, type } = bem;
     // NOTIFY
     if (type === "notify") {
@@ -90,14 +90,12 @@ export default async function messageUpsertHandler(sock, bem) {
                 // [PUT YOUR ADDITIONAL MIDDLEWARE HERE (IF ANY)]
                 // IN GROUP
                 if (isJidGroup(m.chatId)) {
+                    const mentionedJid = m.message?.[m.type]?.contextInfo?.mentionedJid
+                    const botMentioned = mentionedJid?.some(lid => lid === bot.lid)
 
                     // AUTO RESTORE READ VIEW ONCE
                     /*
                     const viewOnce = m?.message?.[m.type]?.viewOnce
-                    const mentionedJid = m.message?.[m.type]?.contextInfo?.mentionedJid
-                    const botMentioned = mentionedJid?.some(lid => lid === bot.lid)
-
-
                     if (viewOnce) {
                         //await sock.sendMessage(m.chatId, {text: 'view once.. restore ah'}, {quoted: m})
                         m.message[m.type].viewOnce = false
@@ -108,7 +106,7 @@ export default async function messageUpsertHandler(sock, bem) {
 
 
                     // BOT LOCK / UNLOCK 
-                    
+
                     if (/^lock/.test(m.text)) {
                         if (!userManager.trustedJids.has(m.senderId)) continue
                         if (!botMentioned) continue
@@ -203,7 +201,7 @@ export default async function messageUpsertHandler(sock, bem) {
                             if (text === '-h') {
                                 await sendText(sock, m.chatId, pluginHelpSerialize(handler))
                             } else {
-                                await handler({ sock, jid, text, m, q, prefix, command, IWMI  });
+                                await handler({ sock, jid, text, m, q, prefix, command, IWMI });
                             }
                         }
 
