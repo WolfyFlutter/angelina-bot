@@ -92,6 +92,7 @@ export default async function messageUpsertHandler(sock, bem) {
                 if (isJidGroup(m.chatId)) {
 
                     // AUTO RESTORE READ VIEW ONCE
+                    /*
                     const viewOnce = m?.message?.[m.type]?.viewOnce
                     const mentionedJid = m.message?.[m.type]?.contextInfo?.mentionedJid
                     const botMentioned = mentionedJid?.some(lid => lid === bot.lid)
@@ -103,9 +104,12 @@ export default async function messageUpsertHandler(sock, bem) {
                         await sock.sendMessage(m.chatId, { forward: m, contextInfo: { isForwarded: false } }, { quoted: m })
                         continue
                     }
+                    */
+
+
                     // BOT LOCK / UNLOCK 
                     
-                    else if (/^lock/.test(m.text)) {
+                    if (/^lock/.test(m.text)) {
                         if (!userManager.trustedJids.has(m.senderId)) continue
                         if (!botMentioned) continue
                         if (global.botLock) continue

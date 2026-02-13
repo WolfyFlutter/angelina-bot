@@ -1,4 +1,4 @@
-import { sendText, botInfo, store, userManager } from '../helper.js'
+import { sendText, botInfo, store, userManager, bot } from '../helper.js'
 import { getDevice, isJidGroup } from 'baileys'
 
 

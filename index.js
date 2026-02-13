@@ -81,7 +81,7 @@ const getGroupMetadata = async (jid) => {
             return undefined
         }
     } else {
-        console.log(`♻️ cache: ${data.subject}`)
+        //console.log(`♻️ cache: ${data.subject}`)
         return data
     }
 

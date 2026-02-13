@@ -23,6 +23,7 @@ handler.command = ['❌']
 handler.category = ['built-in']
 
 handler.config = {
+    bypassPrefix: true,
     systemPlugin: true,
 }
 
