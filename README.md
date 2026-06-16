@@ -1,9 +1,5 @@
-update lagi dikit, btw gw masih di tahap observasi :v nanti sekalian gw push update besar besaran, sc nya masih di kembangin kok cuma progress nya gk keliatan karena gw masih observasi hehe, next update pengen sup beton. pakek aja scnya jangan kawatir soal update, gw kasih tau kok kalau gw udh mulai nulis kode update
-
-update... dikit...
-beberapa yg pakai sc angelina, menu nya di edit sedemikian rupa.. sungguh kreatif :v 
-
-makasih ges yg udh cobain
+GUYS IAM WORKING ON UPDATE NOW
+sabar ya
 
 <img width="4096" height="1751" alt="IMG_20260201_190714" src="https://github.com/user-attachments/assets/6c4aec59-8875-4c85-90a8-802312d54b22" />
 
