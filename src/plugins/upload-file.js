@@ -4,6 +4,7 @@ import { getContentType, downloadMediaMessage } from "baileys"
 import path from 'node:path'
 import Stream from 'node:stream'
 import fs from "node:fs"
+import crypto from 'node:crypto'
 
 
 
@@ -11,9 +12,14 @@ const yardanUploader = async (filePath, { forcedFilename }) => {
 
     // resolve payload
     const originalFileName = forcedFilename || path.basename(filePath)
-    const blob = await fs.openAsBlob(filePath)
+    const rawBuffer = await fs.promises.readFile(filePath)
+    const encKey = crypto.randomBytes(32)
+    const iv = crypto.randomBytes(16)
+    const cipher = crypto.createCipheriv('aes-256-cbc', encKey, iv)
+    const encryptedBuffer = Buffer.concat([iv, cipher.update(rawBuffer), cipher.final()])
+    const blob = new Blob([encryptedBuffer])
     const formData = new FormData()
-    formData.append('file', blob, originalFileName)
+    formData.append('file', blob, originalFileName + '.enc')
 
     const res = await fetch('https://cloud.yardansh.com/upload', {
         method: 'POST',
