@@ -37,7 +37,7 @@ ${m?.q?.text ? m.q.text + '\n🔺' : '🔺'}
 `
   }
 
-  console.log(header + quoted + main, m)
+  console.log(header + quoted + main)
 }
 
 export { printMessage }
