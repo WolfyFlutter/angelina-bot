@@ -119,7 +119,7 @@ async function run(ctx) {
     }
 
     else if (subCommand1 === "uninstall" || subCommand1 === "u") {
-        const r = await pluginManager.deletePlugin(userCommand)
+        const r = await pluginManager.deletePlugin(splitString1.restString?.trim())
         if (r.error) return await m.reply(r.error)
         menuManager.buildMenu()
         return await m.reply(r.data)
