@@ -1,18 +1,18 @@
 {
   "dependencies": {
     "@cacheable/node-cache": "latest",
-    "@napi-rs/canvas": "^1.0.2",
-    "baileys": "^7.0.0-rc13",
+    "@napi-rs/canvas": "^1.0.3",
+    "baileys": "^7.0.0-rc14",
     "pino": "latest",
     "qrcode-terminal": "latest",
     "sharp": "^0.35.3"
   },
   "name": "bot_wa",
   "version": "1.0.0",
-  "description": "",
+  "description": "bot whatsapp kosongan dengan fitur core, menggunakan library baileys dan sqlite",
   "main": "index.js",
   "scripts": {
-    "start": "node launcher.js"
+    "start": "node ./src/bot.js --expose-gc"
   },
   "keywords": [
     "baileys",

@@ -1,4 +1,10 @@
 import { InteractiveMessage } from "../helper/interactive-message.js"
+import Stream from "node:stream"
+
+const getCatStream = async () => {
+    const r = await fetch(`https://cataas.com/cat?position=center`)
+    return Stream.Readable.fromWeb(r.body)
+}
 
 /**
  * @import {PluginCtx, Plugin} from "../types/types.js"
@@ -10,39 +16,25 @@ import { InteractiveMessage } from "../helper/interactive-message.js"
  * @returns {Promise <any>}
  */
 async function run(ctx) {
-    const { sock, jid } = ctx
-
-    /* minimal code
-        const im = new InteractiveMessage(sock)
-        im.sendTo(jid)
-    */
-
-    // button use example
+    const { sock, jid, command } = ctx
+   
     const im = new InteractiveMessage(sock)
-
-    // set
-    im.setTitle('judul')
-    .setBody('body')
-    .setFooter('footer')
-
-    // set media only support image, video and docment
-    .setMedia({
-        document: Buffer.from("hello world"),
-        mimetype: 'plain/text',
-        fileName: 'hello-world.txt'
-    })
-
-    // send
-    im.sendTo(jid)    
+    im.setTitle('cat')
+        .setBody('kucing')
+        .setFooter('kucing')
+        .setTitle('furry')
+        .setMedia({ image: { stream: await getCatStream() } })
+        .addButtonQuickReply('lagi', command)
+        .sendTo(jid)
 }
 
 /** @type {Plugin} */
 const plugin = {
     run,
     name: "test button",
-    commands: ["b"],
-    categories: ["dev"],
-    description: "button test"
+    commands: ["kucings"],
+    categories: ["example"],
+    description: "button code example with custom helper"
 }
 
 plugin.meta = {

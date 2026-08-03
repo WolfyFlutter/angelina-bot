@@ -1,5 +1,5 @@
 /**
- * @import {Plugin, PluginCtx, CommonResponseOld, PluginVerifikatorResponse} from "../types/types.js"
+ * @import {Plugin, PluginCtx, CommonResponseOld, PluginVerifikatorResponse, CommonResponse} from "../types/types.js"
  */
 
 import { pathToFileURL } from "node:url"
@@ -56,7 +56,7 @@ class PluginManager {
             const filePath = path.join(allPaths.plugins, file)
             const filePathUrl = pathToFileURL(filePath).href + "?time=" + now
             const plugin = await import(filePathUrl)
-            
+
 
             // tambah path ke plugin
             plugin.default.path = filePath
@@ -76,8 +76,8 @@ class PluginManager {
 
     /**
      * @param {Buffer} buffer 
-     * @param {Boolean} isReplaceInstall 
-     * @returns {CommonResponseOld}
+     * @param {Boolean} [isReplaceInstall]
+     * @returns {CommonResponse <string>}
      */
     async install(buffer, isReplaceInstall) {
         return await pluginManagerLock.withLock(ASYNC_LOCK_KEY, async () => {
@@ -106,8 +106,7 @@ class PluginManager {
                     for (const cmd of newPlugin.commands) {
                         this.pluginMap.set(cmd, newPlugin)
                     }
-
-                    return success(verifikator.message)
+                    return { data: verifikator.message }
                 }
 
                 else if (verifikator.status === "replace") {
@@ -131,16 +130,15 @@ class PluginManager {
                     for (const cmd of newPlugin.commands) {
                         this.pluginMap.set(cmd, newPlugin)
                     }
-
-                    return success(verifikator.message)
+                    return { data: verifikator.message }
                 }
 
                 else if (verifikator.status === "fail") {
-                    return fail(verifikator.message)
+                    return { error: verifikator.message }
                 }
             } catch (e) {
                 console.error(e)
-                return fail(e.message)
+                return { error: verifikator.message }
             } finally {
                 await rm(TEMP_PLUGIN_PATH)
             }
@@ -151,46 +149,45 @@ class PluginManager {
     /**
      * 
      * @param {string} command 
-     * @returns {Promise <managerResponse>}
+     * @returns {Promise <CommonResponse<string>>}
      */
     async deletePlugin(command) {
-            try {
-                if (!command) return fail(`😮‍💨 mau hapus plugin apa sayang? kasih dong command nya...`)
+        try {
+            if (!command) return { error: `😮‍💨 mau hapus plugin apa sayang? kasih dong command nya...` }
 
-                // cek plugin ada apa engga
-                const plugin = this.pluginMap.get(command)
+            // cek plugin ada apa engga
+            const plugin = this.pluginMap.get(command)
 
-                if (!plugin) return fail(`👻 wakwau.. kamu gak punya plugin dengan command *${command}*`)
+            if (!plugin) return { error: `👻 wakwau.. kamu gak punya plugin dengan command *${command}*` }
 
-                // cek apakah plugin protected
-                if (plugin?.config?.protected) return fail(`hell nah.. how about no.. plugin *${plugin.name}* adalah plugin protected. kamu bisa melihat semua plugin protected denagn command --protected`)
+            // cek apakah plugin protected
+            if (plugin?.config?.protected) return { error: `hell nah.. how about no.. plugin *${plugin.name}* adalah plugin protected. kamu bisa melihat semua plugin protected denagn command --protected` }
 
-                // hapus file dari folder plugin
-                await fs.promises.rm(plugin.path)
+            // hapus file dari folder plugin
+            await fs.promises.rm(plugin.path)
 
-                // hapus plugin dari map
-                for (const cmd of plugin.commands) {
-                    this.pluginMap.delete(cmd)
-                }
-
-                // hapus plugin dari array
-                const pluginIndex = this.pluginArray.findIndex(p => {
-                    return p.commands.some(cmd => cmd === command)
-                })
-                this.pluginArray.splice(pluginIndex, 1)
-
-                // susun kata kata dulu dong
-                const kataKata = `*✅ plugin berhasil di uninstall*\n` +
-                    `nama: ${plugin.name}\n` +
-                    `command: ${plugin.commands.join(', ')}\n` +
-                    `path: ${plugin.path}`
-                return success(kataKata)
-
-            } catch (e) {
-                console.error(`gagal hapus plugin`, e)
-                return fail('error: ' + e.message)
+            // hapus plugin dari map
+            for (const cmd of plugin.commands) {
+                this.pluginMap.delete(cmd)
             }
-        
+
+            // hapus plugin dari array
+            const pluginIndex = this.pluginArray.findIndex(p => {
+                return p.commands.some(cmd => cmd === command)
+            })
+            this.pluginArray.splice(pluginIndex, 1)
+
+            // susun kata kata dulu dong
+            const kataKata = `*✅ plugin berhasil di uninstall*\n` +
+                `nama: ${plugin.name}\n` +
+                `command: ${plugin.commands.join(', ')}\n` +
+                `path: ${plugin.path}`
+            return { data: kataKata }
+
+        } catch (e) {
+            console.error(`gagal hapus plugin`, e)
+            return { error: 'error: ' + e.message }
+        }
     }
 
     /**

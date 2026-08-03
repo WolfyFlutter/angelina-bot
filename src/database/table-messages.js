@@ -26,7 +26,8 @@ ON messages (chat_id);
 const messagesStmt = {}
 
 messagesStmt.deleteAllMessages = db.prepare(`
-	DELETE FROM messages
+	DELETE FROM messages;
+	vacuum
 	`)
 
 messagesStmt.insert = db.prepare(`
