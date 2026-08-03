@@ -1,3 +1,10 @@
+teknologi
+- baileys https://github.com/WhiskeySockets/Baileys
+- sqlite (node js)
+- esm
+- plugin
+- javascript
+
 sabar ya, readme nya masih di bikin
 
 cara jalanin bot
