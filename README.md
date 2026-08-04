@@ -1,50 +1,27 @@
-teknologi
-- baileys https://github.com/WhiskeySockets/Baileys
-- sqlite (node js)
-- esm
-- plugin
-- javascript
+# Welcome!
+selamat datang di repo saya... jangan lupa tinggalkan bintang kalau belum -w-
 
-sabar ya, readme nya masih di bikin
+## 🤖 about
+angelina bot adalah bot whatsapp yang di bangun menggunakan bahasa javascript, bot ini menggunakan library dari [WhiskeySockets/Baileys](https://github.com/WhiskeySockets/Baileys). struktur plugin, ESM, menggunakan node sql untuk menyimpan data messages, contacts, participants, member label, dan lain lain.
 
-cara jalanin bot
+fitur sc :
+- bisa jalan di termux, panel, rdp, vps, apapun yang ada node js nya :v
+- sudah include custom store menggunakan node:sql
+- custom plugin access per group per user
+- custom prefix
+- custom menu thumbnail
+- core plugin
+- plugin crud
+- dan lain lain... (gw bingung apa lagi fiturnya.. nanti gw edit lagi)
+
+## 🚀 cara menjalankan bot
+cara menjalankan bot mudah, lakukan langkah langkah berikut
 1. install library dulu pakai `npm i`
 2. buka file `./src/config.js`
 3. isikan nomor bot,
 4. isikan nomor owner
-5. jalankan file `./src/bot.js`
+5. jalankan file `./src/bot.j
 
-enjoy
-
-# penjelasan plugin
-berikut help untuk plugin core (docs nya masih aku rapikan.. sabar yaa..)
-
-## plugin
-main command : plugin
-
-sub command : `install, install-url, uninstall, view`
-
-
-- cara install plugin
-
-`plugin install`  (reply ke pesan dokumen atau teks yang berisi kode plugin)
-
-`plugin install -r` (sama kaya di atas tapi ini buat replace plugin, biasanya muncul kalau ada plugin yang akan ke replace  akibat plugin install)
-
-*kalian bisa singkat command install menjadi i aja*
-
-
-
-- cara kirim plugin ke chat
-
-`plugin get ping` (buat ngirim plugin ping ke chat dalam bentuk dokumen)
-
-`plugin get ping -t` (buat ngirim plugin ping ke chat dalam bentuk teks)
-
-
-
-- cara hapus/uninstall plugin
-
-`plugin uninstall ping` (buat hapus plugin ping)
-
-... gitu aja dulu nanti gw lanjutin :V
+## 🧩 penjelasan plugin core
+### plugin
+plugin plugin adalah plugin yang di gunakan untuk manage plugin :v wip...
