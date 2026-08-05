@@ -104,7 +104,7 @@ const startSock = async () => {
         }
     })
 
-    global._.sock = sock
+    //global._.sock = sock
 }
 
 await startSock()
