@@ -5,7 +5,7 @@ import { prepareWAMessageMedia } from "baileys"
  */
 
 /**
- * @typedef {"PROMOTION" | "DEFAULT"} Icon
+ * @typedef {"PROMOTION" | "DEFAULT" | "REVIEW" | "DOCUMENT"} Icon
  */
 
 

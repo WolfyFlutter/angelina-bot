@@ -1,32 +1,26 @@
-import { areJidsSameUser, getContentType, jidDecode, normalizeMessageContent } from "baileys"
-import { getFirstStringAndRest } from "../helper/common.js"
+import { getContentType, normalizeMessageContent } from "baileys"
 import fs from "node:fs"
+import { getFirstStringAndRest } from "../helper/common.js"
 
 /**
  * @import {PluginCtx, Plugin} "../types/types.js"
  * @typedef {"get" | "g" | "install" | "i" | "install-url" | "iu" | "uninstall" | "u" | "view" | "v"} SubCommand1
  */
 
-/**
- * buat nampilin quick help string kalau user cuma panggil command plugin tanpa param
- * @param {string} pc pluginCommand
- * @returns {string}
- */
-const textEmptyParam = (pc) => `command :
+/**@param { PluginCtx } ctx */
+async function run(ctx) {
+    const { sock, jid, m, q, text, prefix, command, pluginManager, menuManager } = ctx
+    const prefixCommand = `${prefix ?? ''}${command}`
+
+    if (!text) return await m.reply(`command :
 - get <cmd> [-t]
 - install [-r] (reply)
 - install-url <url> [-r]
 - uninstall <cmd>
 - view <protected | bypass>
 
-ketik ${pc} -help untuk bantuan.`
+ketik ${prefixCommand} -help untuk bantuan.`)
 
-/**@param { PluginCtx } ctx */
-async function run(ctx) {
-    const { text, sock, jid, m, pluginManager, prefix, command, q, menuManager } = ctx
-    const prefixCommand = `${prefix ?? ''}${command}`
-
-    if (!text) return await m.reply(textEmptyParam(prefixCommand))
     const splitString1 = getFirstStringAndRest(text)
 
     /**@type {SubCommand1} */
@@ -38,17 +32,17 @@ async function run(ctx) {
         const cmd = splitString2.firstString
         if (!cmd) return await m.reply(`masukkan command plugin yang ingin di get. contoh ${prefixCommand} get ping. untuk output teks bisa tambahkan param -t, jadi ${prefixCommand} get ping -t`)
 
-        const additionalParam = splitString2.restString
-
-        // options
-        const sendAsText = /-t/.test(additionalParam)
-
         const plugin = pluginManager.getPlugin(cmd)
         if (!plugin) return await m.reply(`gak ada plugin dengan command ${cmd}`)
 
-        const wam = q ?? m
+        if (plugin?.meta?.fileName?.startsWith('private')) return await m.reply(`sorry, plugin ${plugin.name} adalah privte, cant share it T^T`)
 
+        const wam = q ?? m
         const caption = q ? `kamu di berikan plugin *${plugin.name}* oleh ${m?.contact?.name}` : `nih plugin *${plugin.name}* nya`
+
+        // options
+        const additionalParam = splitString2.restString
+        const sendAsText = /-t/.test(additionalParam)
 
         if (sendAsText) {
             const pluginCode = await fs.promises.readFile(plugin.path, { encoding: 'utf-8' })
@@ -66,9 +60,8 @@ async function run(ctx) {
     }
 
     else if (subCommand1 === "install" || subCommand1 === "i") {
-        const isReplacePlugin = /-r/.test(splitString1.restString)
-
         if (!q) return await m.reply(`reply ke pesan dokumen file js atau pesan yang berisi kode plugin`)
+        const isReplacePlugin = /-r/.test(splitString1.restString)
 
         // kita harus normalize message karena kadang kalau kita coba kirim command dari wa web, itu path nya ada document with caption gitu
         const qNormalizeMessage = normalizeMessageContent(q.message)
@@ -76,10 +69,8 @@ async function run(ctx) {
 
         if (qContentType === "documentMessage") {
             const qMime = qNormalizeMessage?.documentMessage?.mimetype
-            const isValidMime = qMime === "text/javascript"
-                || qMime === "application/javascript"
+            const isValidMime = qMime === "text/javascript" || qMime === "application/javascript"
             if (!isValidMime) return await m.reply(`mime nya invalid. mime diterima ${qMime}`)
-
             const buffer = await q.download("buffer")
             const response = await pluginManager.install(buffer, isReplacePlugin)
             if (response.error) return await m.reply(response.error)
@@ -92,30 +83,36 @@ async function run(ctx) {
             menuManager.buildMenu()
             return await m.reply(response.data)
         } else {
-            return await m.reply("reply yang bener kocak")
+            return await m.reply("reply yang bener :v")
         }
     }
 
     else if (subCommand1 === "install-url" || subCommand1 === "iu") {
-
-        if (!splitString1.restString) return await m.reply(`mana urlnya? :v`)
-        const url = splitString1.restString?.match(/https?:\/\/[^\s]+/g)
-        if (!url) return await m.reply(`input url yang bener :v`)
+        let url
+        if (q) {
+            if (!q.text) return await q.reply(`reply ke pesan yang ada teks nya ${m.contact.name}`)
+            url = q.text?.match(/https?:\/\/[^\s]+/g)
+            if (!url) return await q.reply(`tidak bisa menemukan url disini ${m.contact.name}`)
+        } else {
+            if (!splitString1.restString) return await m.reply(`mana urlnya? :v`)
+            url = splitString1.restString?.match(/https?:\/\/[^\s]+/g)
+            if (!url) return await m.reply(`input url yang bener :v`)
+        }
         const isReplacePlugin = /-r/.test(splitString1.restString)
-
+        let buffer
         try {
             const r = await fetch(url)
             if (!r.ok) throw Error(`fetch gagal ${r.status} ${r.statusText}`)
             const ab = await r.arrayBuffer()
-            const buffer = Buffer.from(ab)
-            const response = await pluginManager.install(buffer, isReplacePlugin)
-            if (response.error) return await m.reply(response.error)
-            menuManager.buildMenu()
-            return await m.reply(response.data)
+            buffer = Buffer.from(ab)
         } catch (e) {
             console.error(e)
-            return await m.reply(`kesalaan\n${e.message}`)
+            return await m.reply(`fetch fail\n${e.message}`)
         }
+        const response = await pluginManager.install(buffer, isReplacePlugin)
+        if (response.error) return await m.reply(response.error)
+        menuManager.buildMenu()
+        return await m.reply(response.data)
     }
 
     else if (subCommand1 === "uninstall" || subCommand1 === "u") {
@@ -129,11 +126,14 @@ async function run(ctx) {
         const param = splitString1.restString?.trim()
         const result = param === "protected" ? pluginManager.getProtectedPluginString()
             : param === "bypass" ? pluginManager.getBypassPluginString()
-            : "opsi tersedia\n- protected\n- bypass"
+                : "opsi tersedia\n- protected\n- bypass"
         return await m.reply(result)
     }
-}
 
+    else {
+        return await m.reply(`invalid subcommand. gunakan ${prefixCommand} -h untuk bantuan`)
+    }
+}
 
 /**@type {Plugin} */
 const plugin = {
@@ -141,19 +141,20 @@ const plugin = {
     name: "plugin manager",
     commands: ["plugin"],
     categories: ["core"],
+    description: 'full dokumentasi https://github.com/WolfyFlutter/angelina-bot#plugin-manager'
 }
-
-plugin.description = 'tadaa'
 
 plugin.meta = {
     fileName: "core-plugin-manager.js",
     author: "wolep",
     note: "restart kalau udh kebanyakan install / uninstall plugin ya.",
-    version: "1"
+    version: "1",
+    url: 'https://github.com/WolfyFlutter/angelina-bot#plugin-manager'
 }
 
 plugin.config = {
-    protected: true
+    protected: true,
+    removeFirstUrl: true
 }
 
 export default plugin

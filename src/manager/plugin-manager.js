@@ -1,41 +1,18 @@
 /**
- * @import {Plugin, PluginCtx, CommonResponseOld, PluginVerifikatorResponse, CommonResponse} from "../types/types.js"
+ * @import {Plugin, PluginCtx, CommonResponse} from "../types/types.js"
  */
 
-import { pathToFileURL } from "node:url"
 import { randomUUID } from "node:crypto"
+import fs from "node:fs"
 import { mkdir, rm, writeFile } from "node:fs/promises"
 import path, { dirname } from "node:path"
-import fs from "node:fs"
+import { pathToFileURL } from "node:url"
 
 import { allPaths } from "../all-paths.js"
 import { pluginManagerLock } from "../async-lock.js"
 import { pluginVerifikator } from "../plugin-verifikator.js"
 
 const ASYNC_LOCK_KEY = "wakwau"
-
-
-/**
- * ini cuma wrapper yang ngembaliin objek dengan type commonResponse
- * @param {string} message pesan error
- * @returns {CommonResponseOld}
- */
-const fail = (message) => ({
-    ok: false,
-    message
-})
-
-/**
- * ini cuma wrapper yang ngembaliin objek dengan type commonResponse
- * @param {string} message pesan error
- * @returns {CommonResponseOld}
- */
-const success = (message) => ({
-    ok: true,
-    message
-})
-
-
 
 class PluginManager {
     /**@type {Map<string, Plugin>} */
@@ -138,7 +115,7 @@ class PluginManager {
                 }
             } catch (e) {
                 console.error(e)
-                return { error: verifikator.message }
+                return { error: `gagal. pastikan file kode js yang valid\n${e.message}` }
             } finally {
                 await rm(TEMP_PLUGIN_PATH)
             }

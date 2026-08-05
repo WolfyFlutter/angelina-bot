@@ -33,6 +33,7 @@ import { config } from "./config.js";
 
 
 // for testing
+/*
 global._ = {
     prefixManager,
     pluginManager,
@@ -57,6 +58,7 @@ global._ = {
 
     commonHelper
 }
+*/
 
 global.GC_ANGELINA = "120363423077197619@g.us"
 
@@ -82,7 +84,7 @@ const startSock = async () => {
     //sock.ws.on('frame', (node) => console.log(`node`, node))
 
     sock.ev.process(async (ev) => {
-        const { ["presence.update"]: tmp1, ["message-receipt.update"]: tmp2, ...rest } = ev
+        // const { ["presence.update"]: tmp1, ["message-receipt.update"]: tmp2, ...rest } = ev
         // if (Object.keys(rest).length) {
         //     console.log(rest)
         // }
