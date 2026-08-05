@@ -25,6 +25,17 @@ cara menjalankan bot mudah, lakukan langkah langkah berikut
 
 ## 🧩 penjelasan plugin core
 
+<details>
+  <summary>### Click to expand</summary>
+
+  ### Hidden Heading
+  This content is hidden by default. You can include:
+  * Bullet points
+  * Images
+  * Links
+  
+</details>
+
 ### ping
 command `ping`\
 fungsi : buat cek bot respond apa engga\
