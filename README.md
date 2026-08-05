@@ -54,21 +54,32 @@ command : `plugin`
 plugin install [-r]
 plugin install-url <url> [-r]
 plugin uninstall <cmd>
-plugin view <protecte|reserved>
+plugin view <protected|bypass>
 ```
+
 usage:
-install\
+
+install [-r] (wajib reply pesan)
 - digunakan untuk install plugin
 - wajib reply ke pesan dokumen file js, atau pesan teks yang berisi kode plugin lalu cukup ketik `plugin install`
 - bisa di singkat jadi i, command nya jadi `plugin i`
+- jika ingin replace plugin maka wajib sertakan param `-r` maka jadi `plugin install -r` atau `plugin i -r`
 
-install-url
+install-url <url> [-r]
 - digunakan untuk install plugin menggunakan url
 - command langsung ketik `plugin install-url https://link-plugin.js` tanpa reply
 - dengan reply ketik command `plugin install-url` maka otomatis akan pick url pertama sebagai param
 - plugin bisa di singkat jadi `plugin iu`
+- jika ingin replace plugin maka wajib sertakan param `-r` maka jadi `plugin install-url -r` atau `plugin iu -r`
 
-[note] jika ingin replace plugin maka wajib sertakan param -r
+uninstall \<cmd\>
+- digunakan untuk menghapus / uninstall plugin
+- contoh penggunaan `plugin uninstall xx` dimana xx = nama command plugin
+- bisa di singkat jadi `plugin u`
+
+view \<protected|bypass\>
+- protected digunakan untuk melihat command plugin yang dilindungi
+- bypass digunakan untuk melihat command yang bypass prefix
 </details>
 
 ## ✉️ Struktur Message Serialize
