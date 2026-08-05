@@ -37,13 +37,39 @@ cara menjalankan bot mudah, lakukan langkah langkah berikut
 </details>
 
 ### ping
+<details>
+  <summary>tampilkan ping help</summary>
+  
 command `ping`\
 fungsi : buat cek bot respond apa engga\
 cara pakai : cukup ketik ping, maka bot akan pemberikan respond
+</details>
 
 ### plugin manager
-command : `plugin`\
-fungsi : crud plugin
+<details>
+  <summary>tampilkan plugin manager help</summary>
+  
+command : `plugin`
+```
+plugin install [-r]
+plugin install-url <url> [-r]
+plugin uninstall <cmd>
+plugin view <protecte|reserved>
+```
+usage:
+install\
+- digunakan untuk install plugin
+- wajib reply ke pesan dokumen file js, atau pesan teks yang berisi kode plugin lalu cukup ketik `plugin install`
+- bisa di singkat jadi i, command nya jadi `plugin i`
+
+install-url
+- digunakan untuk install plugin menggunakan url
+- command langsung ketik `plugin install-url https://link-plugin.js` tanpa reply
+- dengan reply ketik command `plugin install-url` maka otomatis akan pick url pertama sebagai param
+- plugin bisa di singkat jadi `plugin iu`
+
+[note] jika ingin replace plugin maka wajib sertakan param -r
+</details>
 
 ## ✉️ Struktur Message Serialize
 ### m
