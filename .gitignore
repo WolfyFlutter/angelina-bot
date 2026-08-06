@@ -5,3 +5,4 @@ temp/
 
 #EHEHEHE
 /src/plugins/private*.js
+/src/plugins/test*.js

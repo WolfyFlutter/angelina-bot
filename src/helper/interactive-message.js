@@ -150,20 +150,28 @@ class InteractiveMessage {
         return this
     }
 
+     /**
+     * @typedef {object} ButtonCopyOptions
+     * @property {Icon} [icon]
+     */
+
     /**
      * 
      * @param {string} displayText 
      * @param {string} copyCode 
+     * @param {ButtonCopyOptions} [opts]
      * @returns {InteractiveMessage}
      */
-    addButtonCopy(displayText, copyCode) {
+    addButtonCopy(displayText, copyCode, opts) {
         if (typeof displayText !== "string") throw Error(`displayText harus string`)
         if (typeof copyCode !== "string") throw Error(`copycode harus string`)
+        const { icon } = opts ?? {}
         this.#message.interactiveMessage.nativeFlowMessage.buttons.push({
             name: "cta_copy",
             buttonParamsJson: JSON.stringify({
                 display_text: displayText,
-                copy_code: copyCode
+                copy_code: copyCode,
+                icon
             })
         },)
         return this
@@ -179,6 +187,7 @@ class InteractiveMessage {
      * @param {string} title 
      * @param {SingleSelectSection[]} sections 
      * @param {SingleSelectOptions} opts
+     * @returns {InteractiveMessage}
      */
     addButtonSingleSelect(title, sections, opts) {
         const { icon = undefined } = opts || {}
@@ -190,6 +199,7 @@ class InteractiveMessage {
                 icon
             })
         })
+        return this
     }
 
     /**

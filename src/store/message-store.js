@@ -2,6 +2,7 @@ import { encodeBinaryNode, proto } from "baileys"
 import { messagesStmt } from "../database/table-messages.js"
 import { formatBytes, longNormalizer, sexyTrim } from "../helper/common.js"
 import { contactStore } from "./contact-store.js"
+import { db } from "../database/database.js"
 
 
 
@@ -59,7 +60,7 @@ class MessageStore {
             const row = dbr.map(v => {
                 totalMessages += v.total
                 totalBytes += v.totalBytes ?? 0
-                return `- ${v.total} ${v.content?.replace("Message","")} (${formatBytes(v.totalBytes)}) | avg ${formatBytes(Math.floor(v.totalBytes/v.total))}`
+                return `- ${v.total} ${v.content?.replace("Message", "")} (${formatBytes(v.totalBytes)}) | avg ${formatBytes(Math.floor(v.totalBytes / v.total))}`
             }).join('\n')
             const kata = `name ${name ?? `unknown`}
 jid ${primaryId}
@@ -96,7 +97,7 @@ ${row}`
                 totalMessages += v.totalMessages ?? 0
                 totalBytes += v.totalBytes ?? 0
                 return `- ${sexyTrim((v.name ?? `unknown`), 15)} [${v.contactId}]
-> ${v.totalMessages} msg (${formatBytes(v.totalBytes)}) | avg ${formatBytes(Math.floor(v.totalBytes/v.totalMessages))}`
+> ${v.totalMessages} msg (${formatBytes(v.totalBytes)}) | avg ${formatBytes(Math.floor(v.totalBytes / v.totalMessages))}`
             }).join('\n\n')
             return title + '\n' + rows
         }).join('\n\n')
@@ -113,12 +114,14 @@ ${text}`
      */
     deleteAllMessages() {
         try {
-            const dbr = messagesStmt.deleteAllMessages.run()
-            if (dbr?.changes === 0) {
-                return { data: `pesan sudah kosong, tidak ada pesan yang di hapus` }
-            } else {
-                return { data: `${dbr.changes} pesan telah di hapus` }
-            }
+            db.exec("DELETE FROM messages");
+            db.exec("PRAGMA wal_checkpoint(TRUNCATE)");
+            db.exec("VACUUM");
+            const pageCount = db.prepare("PRAGMA page_count").get();
+            const freeList = db.prepare("PRAGMA freelist_count").get();
+            console.log(pageCount, freeList);
+            
+            return { data: `semua pesan sudah di hapus` }
         } catch (e) {
             return { error: `catch error\n${e.message} ` }
             console.error(e)

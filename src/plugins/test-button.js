@@ -1,10 +1,4 @@
 import { InteractiveMessage } from "../helper/interactive-message.js"
-import Stream from "node:stream"
-
-const getCatStream = async () => {
-    const r = await fetch(`https://cataas.com/cat?position=center`)
-    return Stream.Readable.fromWeb(r.body)
-}
 
 /**
  * @import {PluginCtx, Plugin} from "../types/types.js"
@@ -23,7 +17,7 @@ async function run(ctx) {
         .setBody('kucing')
         .setFooter('kucing')
         .setTitle('furry')
-        .setMedia({ image: { stream: await getCatStream() } })
+        .setMedia({ image: { url: "https://cataas.com/cat?position=center"} })
         .addButtonQuickReply('lagi', command)
         .sendTo(jid)
 }
@@ -32,7 +26,7 @@ async function run(ctx) {
 const plugin = {
     run,
     name: "test button",
-    commands: ["kucings"],
+    commands: ["cat"],
     categories: ["example"],
     description: "button code example with custom helper"
 }
