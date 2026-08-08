@@ -1,4 +1,4 @@
-import { getContentType, normalizeMessageContent } from "baileys"
+import { areJidsSameUser, getContentType, normalizeMessageContent } from "baileys"
 import fs from "node:fs"
 import { getFirstStringAndRest } from "../helper/common.js"
 
@@ -35,10 +35,17 @@ ketik ${prefixCommand} -help untuk bantuan.`)
         const plugin = pluginManager.getPlugin(cmd)
         if (!plugin) return await m.reply(`gak ada plugin dengan command ${cmd}`)
 
-        if (plugin?.meta?.fileName?.startsWith('private')) return await m.reply(`sorry, plugin ${plugin.name} adalah privte, cant share it T^T`)
+        if (plugin?.config?.preventShare) return await m.reply(`sorry, plugin ${plugin.name} adalah privte, cant share it T^T`)
 
-        const wam = q ?? m
-        const caption = q ? `kamu di berikan plugin *${plugin.name}* oleh ${m?.contact?.name}` : `nih plugin *${plugin.name}* nya`
+        const wam = m.button ? m
+            : q ? q
+                : m
+
+        const captionGiven = `kamu di berikan plugin *${plugin.name}* oleh ${m?.contact?.name}`
+        const captionSelf = `nih plugin *${plugin.name}* nya`
+        const caption = m.button ? captionSelf
+            : areJidsSameUser(m.sender, q?.sender) ? captionSelf
+            : !q ? captionSelf : captionGiven
 
         // options
         const additionalParam = splitString2.restString
@@ -55,7 +62,7 @@ ketik ${prefixCommand} -help untuk bantuan.`)
                 fileName: plugin.meta.fileName,
                 mimetype: 'text/javascript',
                 caption
-            }, { quoted: q })
+            }, { quoted: !q ? undefined : wam })
         }
     }
 

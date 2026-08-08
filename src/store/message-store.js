@@ -114,17 +114,14 @@ ${text}`
      */
     deleteAllMessages() {
         try {
-            db.exec("DELETE FROM messages");
-            db.exec("PRAGMA wal_checkpoint(TRUNCATE)");
-            db.exec("VACUUM");
+            db.exec("DELETE FROM messages; PRAGMA wal_checkpoint(TRUNCATE); VACUUM");
             const pageCount = db.prepare("PRAGMA page_count").get();
             const freeList = db.prepare("PRAGMA freelist_count").get();
-            console.log(pageCount, freeList);
-            
+            console.log(pageCount, freeList);         
             return { data: `semua pesan sudah di hapus` }
         } catch (e) {
-            return { error: `catch error\n${e.message} ` }
             console.error(e)
+            return { error: `catch error\n${e.message} ` }
         }
     }
 

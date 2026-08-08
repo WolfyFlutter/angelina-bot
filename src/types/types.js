@@ -57,6 +57,7 @@
  * @property {Boolean} [protected] kalau true maka plugin gak bisa di hapus, biasanya plugin core punya ini
  * @property {Boolean} [removeFirstUrl] set true kalau hentak ingin sisipkan url di deskripsi atau di author note, dan isikan key url pada meta plugin
  * @property {Boolean} [bypassLock] set true kalau command mau bypass lock, biasanya ini cuma untuk fitur lock / unlock
+ * @property {Boolean} [preventShare] set true kalau kamu gak mau plugin mu di get :v
  */
 
 /**

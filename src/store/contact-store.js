@@ -9,6 +9,7 @@ import { toJsObject } from "../helper/common.js"
 import { formatSecond } from "../helper/common.js"
 
 const SATU_HARI = 24 * 60 * 60 * 1000
+const ENAM_JAM = 12 * 60 * 60 * 1000
 const SATU_MENIT = 1 * 60 * 1000
 
 /**
@@ -143,7 +144,7 @@ class ContactStore {
             }
             db.exec(`COMMIT`)
             transactionOpen = false
-            console.debug(`CONTACT UPSERT\n`, skippedContact, contactSyncSerialize)
+            // console.debug(`CONTACT UPSERT\n`, skippedContact, contactSyncSerialize)
 
         } catch (e) {
             if (transactionOpen) db.exec(`ROLLBACK`)
@@ -177,7 +178,7 @@ class ContactStore {
             db.exec(`COMMIT`)
             transactionOpen = false
 
-            console.debug(`UPSERT LIDPNMAPPINGS\n`, dbPayloads)
+            // console.debug(`UPSERT LIDPNMAPPINGS\n`, dbPayloads)
         } catch (e) {
             if (transactionOpen) db.exec(`ROLLBACK`)
             console.error('gagal upsertLidPnMappings', e)
@@ -212,7 +213,7 @@ class ContactStore {
         if (DBresult) {
             const newCache = toJsObject(DBResult)
             this.#contactCache.set(primaryId, newCache)
-            console.info(`[contact store] insert cache`, newCache)
+            // console.info(`[contact store] insert cache`, newCache)
         } else {
             return undefined
         }
@@ -253,7 +254,7 @@ class ContactStore {
                 })
                 const veryNewCache = toJsObject(DBResult)
                 this.#contactCache.set(primaryId, veryNewCache)
-                console.log(`[contact store] update contact ✨`, veryNewCache)
+                // console.log(`[contact store] update contact ✨`, veryNewCache)
                 return veryNewCache
             }
 
@@ -289,14 +290,14 @@ class ContactStore {
                 })
                 const veryNewCache = toJsObject(DBResult)
                 this.#contactCache.set(primaryId, veryNewCache)
-                console.log(`[contact store] update contact ✨ & insert cache`, veryNewCache)
+                // console.log(`[contact store] update contact ✨ & insert cache`, veryNewCache)
                 return veryNewCache
             }
 
             else {
                 if (!skipAddCache) {
                     this.#contactCache.set(primaryId, newCache)
-                    console.info(`[contact store] insert cache`, newCache)
+                    // console.info(`[contact store] insert cache`, newCache)
                 }
                 return newCache
             }
@@ -330,7 +331,7 @@ class ContactStore {
 }
 
 const contactStore = new ContactStore()
-contactStore.setClearCacheEvery(SATU_HARI)
+contactStore.setClearCacheEvery(ENAM_JAM)
 
 
 export { contactStore }

@@ -21,7 +21,7 @@ const idk = '~unknown'
 const printMessage = (m, opts) => {
   const { type, messageIndex = 'unsaved' } = opts ?? {}
   const header =
-    `${type === "notify" ? `🔊` : `🔈`} ${type} [${messageIndex}]
+    `${type === "notify" ? `🔊` : `🔈`} ${type}, idx [${messageIndex}]
 🕒 ${m?.messageTimestamp ? humanTimeFromSecond(m?.messageTimestamp) : idk}
 ⛺ ${m?.chat?.name ?? idk} [${m?.chat?.id}]
 `

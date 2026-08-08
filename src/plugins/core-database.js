@@ -1,4 +1,5 @@
 import { formatBytes } from "../helper/common.js"
+import { db } from "../database/database.js"
 
 /**
  * @import {PluginCtx, Plugin} from "../types/types.js"
@@ -12,7 +13,7 @@ import { formatBytes } from "../helper/common.js"
 async function run(ctx) {
     const { m } = ctx
     let map = new Map()
-    _.db.prepare(`
+    db.prepare(`
 SELECT
     sqlite_schema.type,
     sqlite_schema.tbl_name AS tableName,
