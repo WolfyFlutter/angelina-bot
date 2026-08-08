@@ -1,8 +1,13 @@
 # Welcome!
-selamat datang di repo saya... jangan lupa tinggalkan bintang kalau belum -w-
+selamat datang di repo saya... jangan lupa tinggalkan bintang kalau belum -w- dan sorry kalau kode nya jelek T^T
 
 ## 🤖 about
 angelina bot adalah bot whatsapp yang di bangun menggunakan bahasa javascript, bot ini menggunakan library dari [WhiskeySockets/Baileys](https://github.com/WhiskeySockets/Baileys). struktur plugin, ESM, menggunakan node sql untuk menyimpan data messages, contacts, participants, member label, dan lain lain.
+
+kode ini dibuat dengan beberapa perinsip
+- kode memiliki penamaan variabel yang deskriptif :v
+- mudah di maintenance
+- tetap mengutamakan efisiensi + keterbacaan kode
 
 fitur sc :
 - WITH JSDOC, jadi kalian gak perlu skill dukun (nebak nerawang param / return type haha)
@@ -13,6 +18,8 @@ fitur sc :
 - custom menu thumbnail
 - core plugin
 - plugin crud
+- plugin install via url
+- theme manager
 - dan lain lain... (gw bingung apa lagi fiturnya.. nanti gw edit lagi)
 
 ## 🚀 cara menjalankan bot
@@ -21,20 +28,11 @@ cara menjalankan bot mudah, lakukan langkah langkah berikut
 2. buka file `./src/config.js`
 3. isikan nomor bot,
 4. isikan nomor owner
-5. jalankan file `./src/bot.j
+5. jalankan file `./src/bot.js`
 
 ## 🧩 penjelasan plugin core
 
-<details>
-  <summary>### Click to expand</summary>
-
-  ### Hidden Heading
-  This content is hidden by default. You can include:
-  * Bullet points
-  * Images
-  * Links
-  
-</details>
+dokumentasinya belum kelar ya :v baru gw tulis 2 wkwk
 
 ### ping
 <details>
@@ -47,10 +45,11 @@ cara pakai : cukup ketik ping, maka bot akan pemberikan respond
 
 ### plugin manager
 <details>
-  <summary>tampilkan plugin manager help</summary>
+  <summary>tampilkan plugin manager help</summary><br>
   
 command : `plugin`
 ```
+plugin get <cmd>
 plugin install [-r]
 plugin install-url <url> [-r]
 plugin uninstall <cmd>
@@ -59,7 +58,13 @@ plugin view <protected|bypass>
 
 usage:
 
-install [-r] (wajib reply pesan)
+get <cmd> [-t]
+- digunakan untuk mendapatkan plugin
+- contoh penggunaan : `plugin get ping` maka bot akan mengirim plugin ping ke chat dalam bentuk dokumen message berisi file js ping
+- gunakan param `-t` untuk format teks. contoh `plugin get ping -t`
+- bisa juga di singkat menjadi `plugin g ping -t`
+
+install [-r]
 - digunakan untuk install plugin
 - wajib reply ke pesan dokumen file js, atau pesan teks yang berisi kode plugin lalu cukup ketik `plugin install`
 - bisa di singkat jadi i, command nya jadi `plugin i`
@@ -226,11 +231,6 @@ plugin.meta = {
     version: "1",
     author: "wolep",
     note: "idk"
-}
-
-plugin.config = {
-    protected: true,
-    bypassPrefix: true
 }
 
 export default plugin
