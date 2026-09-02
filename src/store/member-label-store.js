@@ -26,17 +26,35 @@ class MemberLabelStore {
     /**@type {memberLabelBase[]} */
     #tempMemberLabelBases = []
 
+    /**@type {NodeJS.Timeout} */
+    #cleanupInterval
+
+    #MEMBER_LABEL_CACHE_TTL = 12 * 60 * 60 * 1000
+
     constructor() {
         // load all admin from db to cacheAdmin
         const rows = groupParticipantsStmt.getAllMemberLabel.iterate()
         for (const row of rows) {
             const { jid, lid, label } = row
             const ada = this.#memberLabel.has(jid)
-            if (!ada) this.#memberLabel.set(jid, {})
+            if (!ada) this.#memberLabel.set(jid, { _updatedAt: Date.now() })
             const obj = this.#memberLabel.get(jid)
             obj[lid] = label
         }
 
+        this.#cleanupInterval = setInterval(() => this.#evictStale(), 30 * 60 * 1000)
+        this.#cleanupInterval.unref()
+    }
+
+    #evictStale() {
+        if (this.#memberLabel.size === 0) return
+        const now = Date.now()
+        for (const [jid, labelMap] of this.#memberLabel) {
+            if ((labelMap?._updatedAt ?? 0) + this.#MEMBER_LABEL_CACHE_TTL < now) {
+                this.#memberLabel.delete(jid)
+            }
+        }
+        if (global?.gc) global.gc()
     }
 
     /**
@@ -70,9 +88,10 @@ class MemberLabelStore {
 
             // update cache
             const _entryExist = this.#memberLabel.has(memberLabel.groupJid)
-            if (!_entryExist) this.#memberLabel.set(memberLabel.groupJid, {})
+            if (!_entryExist) this.#memberLabel.set(memberLabel.groupJid, { _updatedAt: Date.now() })
 
             const gcLabel = this.#memberLabel.get(memberLabel.groupJid)
+            gcLabel._updatedAt = Date.now()
             if (!memberLabel.label) {
                 // user hapus label
                 delete gcLabel[memberLabel.authorLid]

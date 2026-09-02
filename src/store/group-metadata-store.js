@@ -31,11 +31,16 @@ const updateAdminCache = (gm, mapAdmin) => {
 }
 
 class GroupMetadataStore {
-    /**@type {Map<GroupMetadata['id'], GroupMetadata>} */
+    /**@type {Map<GroupMetadata['id'], GroupMetadata & {_lastAccess: number}>} */
     #cacheGroupMetadata = new Map()
 
     /**@type {Map <GroupMetadata['id'], undefined>} */
     #cacheAdmin = new Map()
+
+    /**@type {NodeJS.Timeout} */
+    #cleanupInterval
+
+    #GM_CACHE_TTL = 24 * 60 * 60 * 1000
 
     constructor() {
         // load all admin from db to cacheAdmin
@@ -47,6 +52,21 @@ class GroupMetadataStore {
             const obj = this.#cacheAdmin.get(jid)
             obj[lid] = admin
         }
+
+        this.#cleanupInterval = setInterval(() => this.#evictStale(), 5 * 60 * 1000)
+        this.#cleanupInterval.unref()
+    }
+
+    #evictStale() {
+        if (this.#cacheGroupMetadata.size === 0) return
+        const now = Date.now()
+        for (const [jid, gm] of this.#cacheGroupMetadata) {
+            if (now - gm._lastAccess > this.#GM_CACHE_TTL) {
+                this.#cacheGroupMetadata.delete(jid)
+                this.#cacheAdmin.delete(jid)
+            }
+        }
+        if (global?.gc) global.gc()
     }
 
     async pickSavedGM() {
@@ -93,6 +113,7 @@ class GroupMetadataStore {
     async getGroupMetadata(jid, sock) {
         const cacheGroupMetadata = this.#cacheGroupMetadata.get(jid)
         if (cacheGroupMetadata) {
+            cacheGroupMetadata._lastAccess = Date.now()
             return cacheGroupMetadata
         } else {
             try {
@@ -194,6 +215,7 @@ class GroupMetadataStore {
             }
 
             // update cache groupMetadata
+            groupMetadata._lastAccess = Date.now()
             this.#cacheGroupMetadata.set(groupMetadata.id, groupMetadata)
 
             // update cache admin
@@ -209,6 +231,7 @@ class GroupMetadataStore {
         else {
             const gm = this.#cacheGroupMetadata.get(groupMetadata.id)
             Object.assign(gm, groupMetadata)
+            gm._lastAccess = Date.now()
         }
     }
 
@@ -271,6 +294,7 @@ class GroupMetadataStore {
                     groupMetadataCache.participants.push(newParticipant)
                     groupMetadataCache.size = groupMetadataCache.participants.length
                 }
+                groupMetadataCache._lastAccess = Date.now()
             }
 
         }
@@ -304,6 +328,7 @@ class GroupMetadataStore {
                     groupMetadataCache.participants.splice(indexKickedParticipant, 1)
                     groupMetadataCache.size = groupMetadataCache.participants.length
                 }
+                groupMetadataCache._lastAccess = Date.now()
             }
 
 
@@ -342,6 +367,7 @@ class GroupMetadataStore {
                 } else {
                     targetParticipant.admin = 'admin'
                 }
+                groupMetadataCache._lastAccess = Date.now()
             }
 
         }
@@ -375,6 +401,7 @@ class GroupMetadataStore {
                 } else {
                     targetParticipant.admin = null
                 }
+                groupMetadataCache._lastAccess = Date.now()
             }
         }
     }

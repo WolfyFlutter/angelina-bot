@@ -8,6 +8,16 @@ import { handlertMessagesUpsert } from "./event-handler/messages.upsert.js";
 
 global.nodeMap = new Map()
 
+const NODE_MAP_TTL = 60_000
+setInterval(() => {
+    const now = Date.now()
+    for (const [id, node] of global.nodeMap) {
+        if (now - node._ts > NODE_MAP_TTL) {
+            global.nodeMap.delete(id)
+        }
+    }
+}, 30_000).unref()
+
 const startSock = async () => {
 
     const sock = await createSocket()
@@ -18,7 +28,8 @@ const startSock = async () => {
         (node) => {
             global.nodeMap.set(node.attrs.id, {
                 ...node,
-                content: (node.content ?? []).filter( v => v.tag !== 'enc')
+                content: (node.content ?? []).filter( v => v.tag !== 'enc'),
+                _ts: Date.now()
             })
         }
     )

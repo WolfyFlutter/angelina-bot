@@ -211,9 +211,9 @@ class ContactStore {
             primaryId: primaryId ?? null
         })
         if (DBresult) {
-            const newCache = toJsObject(DBResult)
+            const newCache = toJsObject(DBresult)
             this.#contactCache.set(primaryId, newCache)
-            // console.info(`[contact store] insert cache`, newCache)
+            return newCache
         } else {
             return undefined
         }
